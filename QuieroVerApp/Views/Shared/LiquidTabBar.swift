@@ -29,9 +29,10 @@ struct LiquidTabBar: View {
         }
         .padding(4)
         .background(.thinMaterial, in: Capsule())
-        .overlay(Capsule().strokeBorder(.white.opacity(0.18), lineWidth: 1))
-        .shadow(color: .black.opacity(0.18), radius: 18, x: 0, y: 8)
-        .padding(.horizontal, Spacing.xxl)
+        .overlay(Capsule().strokeBorder(.white.opacity(0.22), lineWidth: 1))
+        .shadow(color: .black.opacity(0.16), radius: 14, x: 0, y: 6)
+        .shadow(color: .black.opacity(0.10), radius: 28, x: 0, y: 14)
+        .padding(.horizontal, Spacing.xl)
         .padding(.bottom, Spacing.xs)
     }
 
@@ -44,13 +45,14 @@ struct LiquidTabBar: View {
         } label: {
             Text(tab.label)
                 .font(.subheadline.weight(.semibold))
-                .foregroundStyle(isSelected ? Color.white : Color.secondary)
+                .foregroundStyle(isSelected ? Color.white : Color.secondary.opacity(0.85))
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 11)
                 .background {
                     if isSelected {
                         Capsule()
                             .fill(Color.accentColor)
+                            .shadow(color: Color.accentColor.opacity(0.5), radius: 8, x: 0, y: 3)
                             .matchedGeometryEffect(id: "liquidTabBlob", in: blobNamespace)
                     }
                 }
@@ -61,7 +63,7 @@ struct LiquidTabBar: View {
     private func selectTab(_ tab: LibraryTab) {
         guard selection != tab else { return }
         Haptics.light()
-        withAnimation(.spring(response: 0.4, dampingFraction: 0.78)) {
+        withAnimation(.spring(response: 0.45, dampingFraction: 0.82)) {
             selection = tab
         }
     }

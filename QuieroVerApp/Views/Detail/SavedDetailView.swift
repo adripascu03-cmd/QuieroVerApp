@@ -19,9 +19,7 @@ struct SavedDetailView: View {
                     title: item.title,
                     mediaType: item.mediaType,
                     posterPath: item.posterPath,
-                    backdropPath: item.backdropPath,
-                    director: item.directorsOrCreators.first.map(PersonDisplayItem.init),
-                    directorRoleLabel: item.creditSectionLabel
+                    backdropPath: item.backdropPath
                 )
 
                 VStack(alignment: .leading, spacing: Spacing.xl) {
@@ -34,6 +32,9 @@ struct SavedDetailView: View {
                             Text(metaLine)
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
+                            if let director = item.directorsOrCreators.first.map(PersonDisplayItem.init) {
+                                DirectorBadge(person: director, roleLabel: item.creditSectionLabel)
+                            }
                             GenreChips(names: item.genres.map(\.name))
                         }
                         .frame(maxWidth: .infinity)
@@ -84,7 +85,7 @@ struct SavedDetailView: View {
                     showingCompletionSheet = true
                 }
                 .padding(.horizontal, Spacing.screenMargin)
-                .padding(.bottom, Spacing.sm)
+                .padding(.bottom, Spacing.md)
             }
         }
         .sheet(isPresented: $showingCompletionSheet) {
