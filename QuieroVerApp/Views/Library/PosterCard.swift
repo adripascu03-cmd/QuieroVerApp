@@ -2,7 +2,7 @@ import SwiftUI
 
 /// Tarjeta de poster para el grid: casi plana, sombra muy sutil,
 /// título debajo y, en Vistas, una cápsula discreta con el impacto.
-struct MediaPosterCard: View {
+struct PosterCard: View {
     let item: MediaItem
     var showImpact: Bool = false
 
@@ -11,11 +11,11 @@ struct MediaPosterCard: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Spacing.xxs) {
+        VStack(alignment: .leading, spacing: Spacing.xs) {
             ZStack(alignment: .bottomTrailing) {
                 AsyncPosterImage(url: posterURL, title: item.title, mediaType: item.mediaType)
                     .aspectRatio(2 / 3, contentMode: .fill)
-                    .clipShape(RoundedRectangle(cornerRadius: AppTheme.posterCornerRadius))
+                    .clipShape(RoundedRectangle(cornerRadius: AppTheme.posterCornerRadius, style: .continuous))
                     .gridPosterShadow()
 
                 if showImpact, let impact = item.personalImpact {
@@ -25,7 +25,7 @@ struct MediaPosterCard: View {
             }
 
             Text(item.title)
-                .font(.caption.weight(.medium))
+                .font(.caption.weight(.semibold))
                 .lineLimit(1)
                 .foregroundStyle(.primary)
 
@@ -49,6 +49,7 @@ struct ImpactBadge: View {
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
             .background(.black.opacity(0.55), in: Capsule())
+            .overlay(Capsule().strokeBorder(.white.opacity(0.25), lineWidth: 0.5))
     }
 
     private var formatted: String {

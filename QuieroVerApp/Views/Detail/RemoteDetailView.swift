@@ -3,10 +3,13 @@ import SwiftData
 
 /// Ficha previa de un resultado de búsqueda, antes de añadirlo a la
 /// biblioteca. Carga el detalle completo de TMDb (sinopsis, reparto,
-/// dirección/creación) y ofrece el botón "Añadir a Quiero ver".
+/// dirección/creación) y ofrece el botón "Añadir a Quiero ver". Al
+/// añadir, avisa al padre (`onAdded`) para que cierre toda la búsqueda
+/// de una vez, sin obligar a un "atrás" manual.
 @MainActor
 struct RemoteDetailView: View {
     let result: MediaSearchResult
+    var onAdded: (() -> Void)? = nil
 
     @Environment(\.modelContext) private var modelContext
     @State private var viewModel = RemoteDetailViewModel()
@@ -37,46 +40,62 @@ struct RemoteDetailView: View {
 
     @ViewBuilder
     private func loadedContent(_ details: MediaDetails) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            header(details)
+        VStack(spacing: 0) {
+            MediaDetailHero(
+                title: details.title,
+                mediaType: details.mediaType,
+                posterPath: details.posterPath,
+                backdropPath: details.backdropPath
+            )
 
             VStack(alignment: .leading, spacing: Spacing.lg) {
-                GenreChips(names: details.genres.map(\.name))
-
-                Text(details.overview?.isEmpty == false ? details.overview! : "Sin sinopsis disponible.")
-                    .font(.body)
-                    .foregroundStyle(details.overview?.isEmpty == false ? .primary : .secondary)
-
-                CastSection(
-                    title: details.creditSectionLabel,
-                    people: details.creatorsOrDirectors.map(PersonDisplayItem.init)
-                )
-
-                CastSection(title: "Reparto", people: details.cast.map(PersonDisplayItem.init))
-
-                VStack(alignment: .leading, spacing: Spacing.md) {
-                    addButton(details)
-
-                    if let addedItem {
-                        ReasonAddedField(item: addedItem)
+                GlassInfoPanel {
+                    VStack(spacing: Spacing.xs) {
+                        Text(details.title)
+                            .font(.title2.bold())
+                            .multilineTextAlignment(.center)
+                            .fixedSize(horizontal: false, vertical: true)
+                        Text(metaLine(details))
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        GenreChips(names: details.genres.map(\.name))
                     }
+                    .frame(maxWidth: .infinity)
+                }
+
+                SectionBlock(title: "Sinopsis") {
+                    Text(details.overview?.isEmpty == false ? details.overview! : "Sin sinopsis disponible.")
+                        .font(.body)
+                        .lineSpacing(4)
+                        .foregroundStyle(details.overview?.isEmpty == false ? .primary : .secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                if !details.creatorsOrDirectors.isEmpty {
+                    SectionBlock(title: details.creditSectionLabel) {
+                        CastCarousel(people: details.creatorsOrDirectors.map(PersonDisplayItem.init))
+                    }
+                }
+
+                if !details.cast.isEmpty {
+                    SectionBlock(title: "Reparto") {
+                        CastCarousel(people: details.cast.map(PersonDisplayItem.init))
+                    }
+                }
+
+                PrimaryGlassButton(
+                    title: addedItem != nil ? "Añadida a Quiero ver" : "Añadir a Quiero ver",
+                    systemImage: addedItem != nil ? "checkmark" : "bookmark.fill",
+                    isDisabled: addedItem != nil
+                ) {
+                    addToLibrary(details)
                 }
                 .padding(.top, Spacing.sm)
             }
-            .padding(.horizontal, Spacing.md)
-            .padding(.top, Spacing.lg)
+            .padding(.horizontal, Spacing.screenMargin)
+            .padding(.top, MediaDetailHero.posterOverlap + Spacing.sm)
             .padding(.bottom, Spacing.xxl)
         }
-    }
-
-    private func header(_ details: MediaDetails) -> some View {
-        MediaBackdropHeader(
-            title: details.title,
-            mediaType: details.mediaType,
-            metaLine: metaLine(details),
-            posterPath: details.posterPath,
-            backdropPath: details.backdropPath
-        )
     }
 
     private func metaLine(_ details: MediaDetails) -> String {
@@ -91,30 +110,14 @@ struct RemoteDetailView: View {
         return parts.joined(separator: " · ")
     }
 
-    @ViewBuilder
-    private func addButton(_ details: MediaDetails) -> some View {
-        Button {
-            addToLibrary(details)
-        } label: {
-            Label(
-                addedItem != nil ? "Añadida a Quiero ver" : "Añadir a Quiero ver",
-                systemImage: addedItem != nil ? "checkmark" : "bookmark.fill"
-            )
-            .font(.headline)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, Spacing.xs)
-        }
-        .buttonStyle(.borderedProminent)
-        .tint(addedItem != nil ? Color.secondary : Color.accentColor)
-        .disabled(addedItem != nil)
-        .clipShape(Capsule())
-    }
-
     private func addToLibrary(_ details: MediaDetails) {
         guard addedItem == nil else { return }
         let item = LibraryWriter.addToWantToWatch(details: details, context: modelContext)
         addedItem = item
         Haptics.light()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+            onAdded?()
+        }
     }
 }
 

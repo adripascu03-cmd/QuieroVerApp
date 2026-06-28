@@ -11,7 +11,9 @@ struct SearchView: View {
                 .navigationTitle("Buscar")
                 .navigationBarTitleDisplayMode(.inline)
                 .navigationDestination(for: MediaSearchResult.self) { result in
-                    RemoteDetailView(result: result)
+                    // onAdded cierra todo el sheet de búsqueda de una vez,
+                    // no solo este paso de la navegación interna.
+                    RemoteDetailView(result: result, onAdded: { dismiss() })
                 }
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {

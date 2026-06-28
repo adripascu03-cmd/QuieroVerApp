@@ -6,6 +6,7 @@ struct AsyncPosterImage: View {
     let url: URL?
     let title: String
     let mediaType: MediaType
+    var contentMode: ContentMode = .fill
 
     var body: some View {
         if let url {
@@ -14,7 +15,7 @@ struct AsyncPosterImage: View {
                 case .success(let image):
                     image
                         .resizable()
-                        .aspectRatio(contentMode: .fill)
+                        .aspectRatio(contentMode: contentMode)
                 case .empty:
                     PosterPlaceholder(title: title, mediaType: mediaType)
                 case .failure:

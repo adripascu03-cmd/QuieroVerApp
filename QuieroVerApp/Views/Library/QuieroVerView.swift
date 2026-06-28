@@ -9,38 +9,38 @@ struct QuieroVerView: View {
     private var allItems: [MediaItem]
 
     @State private var showingSearch = false
-    @State private var typeFilter: MediaTypeFilter = .all
+    @State private var filter: LibraryFilter = .recientes
 
     private var items: [MediaItem] {
-        guard let mediaType = typeFilter.mediaType else { return allItems }
+        guard let mediaType = filter.mediaType else { return allItems }
         return allItems.filter { $0.mediaType == mediaType }
     }
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: Spacing.md) {
+            VStack(alignment: .leading, spacing: Spacing.lg) {
                 header
+
+                AddMediaCard { showingSearch = true }
+                    .padding(.horizontal, Spacing.screenMargin)
 
                 if allItems.isEmpty {
                     EmptyStateView(
                         title: "Todavía no has guardado nada.",
-                        subtitle: "Busca una película o serie y empieza tu archivo.",
-                        actionTitle: "Buscar"
-                    ) {
-                        showingSearch = true
-                    }
-                    .padding(.top, Spacing.xxl)
+                        subtitle: "Busca una película o serie y empieza tu archivo."
+                    )
+                    .padding(.top, Spacing.lg)
                 } else {
-                    TypeFilterChips(selection: $typeFilter)
+                    FilterPillBar(options: [.recientes, .peliculas, .series], selection: $filter)
 
                     if items.isEmpty {
                         Text("No hay nada con este filtro.")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
-                            .padding(.horizontal, Spacing.md)
+                            .padding(.horizontal, Spacing.screenMargin)
                             .padding(.top, Spacing.lg)
                     } else {
-                        MediaGrid(items: items)
+                        PosterGrid(items: items)
                     }
                 }
             }
@@ -49,16 +49,6 @@ struct QuieroVerView: View {
             SavedDetailView(item: item)
         }
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    showingSearch = true
-                } label: {
-                    Image(systemName: "magnifyingglass")
-                }
-                .accessibilityLabel("Buscar película o serie")
-            }
-        }
         .sheet(isPresented: $showingSearch) {
             SearchView()
         }
@@ -72,7 +62,7 @@ struct QuieroVerView: View {
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }
-        .padding(.horizontal, Spacing.md)
+        .padding(.horizontal, Spacing.screenMargin)
         .padding(.top, Spacing.sm)
     }
 

@@ -3,7 +3,7 @@ import SwiftUI
 /// Grid visual de posters, 2 columnas, espacio generoso.
 /// Navega por valor: el padre debe declarar
 /// `.navigationDestination(for: MediaItem.self)`.
-struct MediaGrid: View {
+struct PosterGrid: View {
     let items: [MediaItem]
     var showImpact: Bool = false
 
@@ -16,12 +16,12 @@ struct MediaGrid: View {
         LazyVGrid(columns: columns, spacing: Spacing.lg) {
             ForEach(items) { item in
                 NavigationLink(value: item) {
-                    MediaPosterCard(item: item, showImpact: showImpact)
+                    PosterCard(item: item, showImpact: showImpact)
                 }
-                .buttonStyle(PosterButtonStyle())
+                .buttonStyle(PressableButtonStyle())
             }
         }
-        .padding(.horizontal, Spacing.md)
+        .padding(.horizontal, Spacing.screenMargin)
         .padding(.bottom, Spacing.xl)
     }
 }

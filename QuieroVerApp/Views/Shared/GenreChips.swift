@@ -9,10 +9,11 @@ struct GenreChips: View {
                 HStack(spacing: Spacing.xs) {
                     ForEach(names, id: \.self) { name in
                         Text(name)
-                            .font(.caption.weight(.medium))
-                            .padding(.horizontal, 10)
+                            .font(.caption.weight(.semibold))
+                            .padding(.horizontal, 12)
                             .padding(.vertical, 6)
                             .background(.thinMaterial, in: Capsule())
+                            .overlay(Capsule().strokeBorder(Color.primary.opacity(0.08), lineWidth: 1))
                     }
                 }
             }

@@ -23,6 +23,20 @@ enum AppTheme {
             endPoint: .bottomTrailing
         )
     }
+
+    /// Degradado del backdrop hacia el fondo del sistema, para que la
+    /// cabecera funda con el contenido en vez de cortar en seco.
+    static func backdropFade(into background: Color) -> LinearGradient {
+        LinearGradient(
+            stops: [
+                .init(color: .black.opacity(0.05), location: 0),
+                .init(color: .black.opacity(0.25), location: 0.6),
+                .init(color: background, location: 1)
+            ],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+    }
 }
 
 extension View {
@@ -43,6 +57,14 @@ extension View {
             radius: AppTheme.detailShadowRadius,
             x: 0,
             y: AppTheme.detailShadowY
+        )
+    }
+
+    /// Borde sutil tipo "glass" para tarjetas sobre material translúcido.
+    func glassBorder(cornerRadius: CGFloat) -> some View {
+        overlay(
+            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                .strokeBorder(Color.primary.opacity(0.08), lineWidth: 1)
         )
     }
 }

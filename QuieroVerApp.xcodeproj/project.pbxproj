@@ -8,9 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		2B2B2B2B2B2B2B2B2B2B0002 /* QuieroVerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0001 /* QuieroVerApp.swift */; };
+		2B2B2B2B2B2B2B2B2B2B0065 /* AddMediaCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0064 /* AddMediaCard.swift */; };
+		2B2B2B2B2B2B2B2B2B2B0067 /* GlassInfoPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0066 /* GlassInfoPanel.swift */; };
+		2B2B2B2B2B2B2B2B2B2B0069 /* PrimaryGlassButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0068 /* PrimaryGlassButton.swift */; };
+		2B2B2B2B2B2B2B2B2B2B006B /* SectionBlock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B006A /* SectionBlock.swift */; };
 		2B2B2B2B2B2B2B2B2B2B0005 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0004 /* AppTheme.swift */; };
 		2B2B2B2B2B2B2B2B2B2B0007 /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0006 /* Haptics.swift */; };
-		2B2B2B2B2B2B2B2B2B2B0009 /* PosterButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0008 /* PosterButtonStyle.swift */; };
+		2B2B2B2B2B2B2B2B2B2B0009 /* PressableButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0008 /* PressableButtonStyle.swift */; };
 		2B2B2B2B2B2B2B2B2B2B000B /* Spacing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B000A /* Spacing.swift */; };
 		2B2B2B2B2B2B2B2B2B2B000E /* Genre.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B000D /* Genre.swift */; };
 		2B2B2B2B2B2B2B2B2B2B0010 /* MediaItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B000F /* MediaItem.swift */; };
@@ -31,18 +35,18 @@
 		2B2B2B2B2B2B2B2B2B2B0030 /* ReasonAddedField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B002F /* ReasonAddedField.swift */; };
 		2B2B2B2B2B2B2B2B2B2B0032 /* RemoteDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0031 /* RemoteDetailView.swift */; };
 		2B2B2B2B2B2B2B2B2B2B0034 /* SavedDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0033 /* SavedDetailView.swift */; };
-		2B2B2B2B2B2B2B2B2B2B0037 /* FilterSortBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0036 /* FilterSortBar.swift */; };
-		2B2B2B2B2B2B2B2B2B2B0039 /* MediaGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0038 /* MediaGrid.swift */; };
-		2B2B2B2B2B2B2B2B2B2B003B /* MediaPosterCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B003A /* MediaPosterCard.swift */; };
+		2B2B2B2B2B2B2B2B2B2B0037 /* FilterPillBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0036 /* FilterPillBar.swift */; };
+		2B2B2B2B2B2B2B2B2B2B0039 /* PosterGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0038 /* PosterGrid.swift */; };
+		2B2B2B2B2B2B2B2B2B2B003B /* PosterCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B003A /* PosterCard.swift */; };
 		2B2B2B2B2B2B2B2B2B2B003D /* QuieroVerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B003C /* QuieroVerView.swift */; };
 		2B2B2B2B2B2B2B2B2B2B003F /* VistasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B003E /* VistasView.swift */; };
 		2B2B2B2B2B2B2B2B2B2B0042 /* SearchResultRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0041 /* SearchResultRow.swift */; };
 		2B2B2B2B2B2B2B2B2B2B0044 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0043 /* SearchView.swift */; };
 		2B2B2B2B2B2B2B2B2B2B0047 /* AsyncPosterImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0046 /* AsyncPosterImage.swift */; };
-		2B2B2B2B2B2B2B2B2B2B0049 /* CastSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0048 /* CastSection.swift */; };
+		2B2B2B2B2B2B2B2B2B2B0049 /* CastCarousel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0048 /* CastCarousel.swift */; };
 		2B2B2B2B2B2B2B2B2B2B004B /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B004A /* EmptyStateView.swift */; };
 		2B2B2B2B2B2B2B2B2B2B004D /* GenreChips.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B004C /* GenreChips.swift */; };
-		2B2B2B2B2B2B2B2B2B2B004F /* MediaBackdropHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B004E /* MediaBackdropHeader.swift */; };
+		2B2B2B2B2B2B2B2B2B2B004F /* MediaDetailHero.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B004E /* MediaDetailHero.swift */; };
 		2B2B2B2B2B2B2B2B2B2B0051 /* PersonAvatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0050 /* PersonAvatar.swift */; };
 		2B2B2B2B2B2B2B2B2B2B0053 /* PersonDisplayItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0052 /* PersonDisplayItem.swift */; };
 		2B2B2B2B2B2B2B2B2B2B0055 /* PosterPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0054 /* PosterPlaceholder.swift */; };
@@ -55,10 +59,14 @@
 		1A1A1A1A1A1A1A1A1A1A1A06 /* QuieroVerApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QuieroVerApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A1A1A1A1A1A1A1A1A1A1A07 /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B0001 /* QuieroVerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuieroVerApp.swift; sourceTree = "<group>"; };
+		2B2B2B2B2B2B2B2B2B2B0064 /* AddMediaCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMediaCard.swift; sourceTree = "<group>"; };
+		2B2B2B2B2B2B2B2B2B2B0066 /* GlassInfoPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassInfoPanel.swift; sourceTree = "<group>"; };
+		2B2B2B2B2B2B2B2B2B2B0068 /* PrimaryGlassButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryGlassButton.swift; sourceTree = "<group>"; };
+		2B2B2B2B2B2B2B2B2B2B006A /* SectionBlock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionBlock.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B0060 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B0004 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B0006 /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
-		2B2B2B2B2B2B2B2B2B2B0008 /* PosterButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PosterButtonStyle.swift; sourceTree = "<group>"; };
+		2B2B2B2B2B2B2B2B2B2B0008 /* PressableButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PressableButtonStyle.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B000A /* Spacing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Spacing.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B000D /* Genre.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Genre.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B000F /* MediaItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaItem.swift; sourceTree = "<group>"; };
@@ -80,18 +88,18 @@
 		2B2B2B2B2B2B2B2B2B2B002F /* ReasonAddedField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReasonAddedField.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B0031 /* RemoteDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteDetailView.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B0033 /* SavedDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedDetailView.swift; sourceTree = "<group>"; };
-		2B2B2B2B2B2B2B2B2B2B0036 /* FilterSortBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterSortBar.swift; sourceTree = "<group>"; };
-		2B2B2B2B2B2B2B2B2B2B0038 /* MediaGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaGrid.swift; sourceTree = "<group>"; };
-		2B2B2B2B2B2B2B2B2B2B003A /* MediaPosterCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPosterCard.swift; sourceTree = "<group>"; };
+		2B2B2B2B2B2B2B2B2B2B0036 /* FilterPillBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterPillBar.swift; sourceTree = "<group>"; };
+		2B2B2B2B2B2B2B2B2B2B0038 /* PosterGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PosterGrid.swift; sourceTree = "<group>"; };
+		2B2B2B2B2B2B2B2B2B2B003A /* PosterCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PosterCard.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B003C /* QuieroVerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuieroVerView.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B003E /* VistasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VistasView.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B0041 /* SearchResultRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultRow.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B0043 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B0046 /* AsyncPosterImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncPosterImage.swift; sourceTree = "<group>"; };
-		2B2B2B2B2B2B2B2B2B2B0048 /* CastSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CastSection.swift; sourceTree = "<group>"; };
+		2B2B2B2B2B2B2B2B2B2B0048 /* CastCarousel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CastCarousel.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B004A /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B004C /* GenreChips.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenreChips.swift; sourceTree = "<group>"; };
-		2B2B2B2B2B2B2B2B2B2B004E /* MediaBackdropHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaBackdropHeader.swift; sourceTree = "<group>"; };
+		2B2B2B2B2B2B2B2B2B2B004E /* MediaDetailHero.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaDetailHero.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B0050 /* PersonAvatar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonAvatar.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B0052 /* PersonDisplayItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonDisplayItem.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B0054 /* PosterPlaceholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PosterPlaceholder.swift; sourceTree = "<group>"; };
@@ -142,7 +150,7 @@
 			children = (
 				2B2B2B2B2B2B2B2B2B2B0004 /* AppTheme.swift */,
 				2B2B2B2B2B2B2B2B2B2B0006 /* Haptics.swift */,
-				2B2B2B2B2B2B2B2B2B2B0008 /* PosterButtonStyle.swift */,
+				2B2B2B2B2B2B2B2B2B2B0008 /* PressableButtonStyle.swift */,
 				2B2B2B2B2B2B2B2B2B2B000A /* Spacing.swift */,
 			);
 			path = Design;
@@ -206,9 +214,9 @@
 		2B2B2B2B2B2B2B2B2B2B0040 /* Library */ = {
 			isa = PBXGroup;
 			children = (
-				2B2B2B2B2B2B2B2B2B2B0036 /* FilterSortBar.swift */,
-				2B2B2B2B2B2B2B2B2B2B0038 /* MediaGrid.swift */,
-				2B2B2B2B2B2B2B2B2B2B003A /* MediaPosterCard.swift */,
+				2B2B2B2B2B2B2B2B2B2B0036 /* FilterPillBar.swift */,
+				2B2B2B2B2B2B2B2B2B2B0038 /* PosterGrid.swift */,
+				2B2B2B2B2B2B2B2B2B2B003A /* PosterCard.swift */,
 				2B2B2B2B2B2B2B2B2B2B003C /* QuieroVerView.swift */,
 				2B2B2B2B2B2B2B2B2B2B003E /* VistasView.swift */,
 			);
@@ -227,14 +235,18 @@
 		2B2B2B2B2B2B2B2B2B2B0056 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				2B2B2B2B2B2B2B2B2B2B0064 /* AddMediaCard.swift */,
 				2B2B2B2B2B2B2B2B2B2B0046 /* AsyncPosterImage.swift */,
-				2B2B2B2B2B2B2B2B2B2B0048 /* CastSection.swift */,
+				2B2B2B2B2B2B2B2B2B2B0048 /* CastCarousel.swift */,
 				2B2B2B2B2B2B2B2B2B2B004A /* EmptyStateView.swift */,
 				2B2B2B2B2B2B2B2B2B2B004C /* GenreChips.swift */,
-				2B2B2B2B2B2B2B2B2B2B004E /* MediaBackdropHeader.swift */,
+				2B2B2B2B2B2B2B2B2B2B0066 /* GlassInfoPanel.swift */,
+				2B2B2B2B2B2B2B2B2B2B004E /* MediaDetailHero.swift */,
 				2B2B2B2B2B2B2B2B2B2B0050 /* PersonAvatar.swift */,
 				2B2B2B2B2B2B2B2B2B2B0052 /* PersonDisplayItem.swift */,
 				2B2B2B2B2B2B2B2B2B2B0054 /* PosterPlaceholder.swift */,
+				2B2B2B2B2B2B2B2B2B2B0068 /* PrimaryGlassButton.swift */,
+				2B2B2B2B2B2B2B2B2B2B006A /* SectionBlock.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -346,9 +358,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				2B2B2B2B2B2B2B2B2B2B0002 /* QuieroVerApp.swift in Sources */,
+				2B2B2B2B2B2B2B2B2B2B0065 /* AddMediaCard.swift in Sources */,
+				2B2B2B2B2B2B2B2B2B2B0067 /* GlassInfoPanel.swift in Sources */,
+				2B2B2B2B2B2B2B2B2B2B0069 /* PrimaryGlassButton.swift in Sources */,
+				2B2B2B2B2B2B2B2B2B2B006B /* SectionBlock.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B0005 /* AppTheme.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B0007 /* Haptics.swift in Sources */,
-				2B2B2B2B2B2B2B2B2B2B0009 /* PosterButtonStyle.swift in Sources */,
+				2B2B2B2B2B2B2B2B2B2B0009 /* PressableButtonStyle.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B000B /* Spacing.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B000E /* Genre.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B0010 /* MediaItem.swift in Sources */,
@@ -367,18 +383,18 @@
 				2B2B2B2B2B2B2B2B2B2B0030 /* ReasonAddedField.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B0032 /* RemoteDetailView.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B0034 /* SavedDetailView.swift in Sources */,
-				2B2B2B2B2B2B2B2B2B2B0037 /* FilterSortBar.swift in Sources */,
-				2B2B2B2B2B2B2B2B2B2B0039 /* MediaGrid.swift in Sources */,
-				2B2B2B2B2B2B2B2B2B2B003B /* MediaPosterCard.swift in Sources */,
+				2B2B2B2B2B2B2B2B2B2B0037 /* FilterPillBar.swift in Sources */,
+				2B2B2B2B2B2B2B2B2B2B0039 /* PosterGrid.swift in Sources */,
+				2B2B2B2B2B2B2B2B2B2B003B /* PosterCard.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B003D /* QuieroVerView.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B003F /* VistasView.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B0042 /* SearchResultRow.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B0044 /* SearchView.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B0047 /* AsyncPosterImage.swift in Sources */,
-				2B2B2B2B2B2B2B2B2B2B0049 /* CastSection.swift in Sources */,
+				2B2B2B2B2B2B2B2B2B2B0049 /* CastCarousel.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B004B /* EmptyStateView.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B004D /* GenreChips.swift in Sources */,
-				2B2B2B2B2B2B2B2B2B2B004F /* MediaBackdropHeader.swift in Sources */,
+				2B2B2B2B2B2B2B2B2B2B004F /* MediaDetailHero.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B0051 /* PersonAvatar.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B0053 /* PersonDisplayItem.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B0055 /* PosterPlaceholder.swift in Sources */,

@@ -14,29 +14,54 @@ struct SavedDetailView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 0) {
-                MediaBackdropHeader(
+            VStack(spacing: 0) {
+                MediaDetailHero(
                     title: item.title,
                     mediaType: item.mediaType,
-                    metaLine: metaLine,
                     posterPath: item.posterPath,
                     backdropPath: item.backdropPath
                 )
 
                 VStack(alignment: .leading, spacing: Spacing.lg) {
-                    GenreChips(names: item.genres.map(\.name))
+                    GlassInfoPanel {
+                        VStack(spacing: Spacing.xs) {
+                            Text(item.title)
+                                .font(.title2.bold())
+                                .multilineTextAlignment(.center)
+                                .fixedSize(horizontal: false, vertical: true)
+                            Text(metaLine)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                            GenreChips(names: item.genres.map(\.name))
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
 
-                    Text(item.overview?.isEmpty == false ? item.overview! : "Sin sinopsis disponible.")
-                        .font(.body)
-                        .foregroundStyle(item.overview?.isEmpty == false ? .primary : .secondary)
+                    SectionBlock(title: "Sinopsis") {
+                        Text(item.overview?.isEmpty == false ? item.overview! : "Sin sinopsis disponible.")
+                            .font(.body)
+                            .lineSpacing(4)
+                            .foregroundStyle(item.overview?.isEmpty == false ? .primary : .secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
 
-                    CastSection(
-                        title: item.creditSectionLabel,
-                        people: item.directorsOrCreators.map(PersonDisplayItem.init)
-                    )
-                    CastSection(title: "Reparto", people: item.cast.map(PersonDisplayItem.init))
+                    if !item.directorsOrCreators.isEmpty {
+                        SectionBlock(title: item.creditSectionLabel) {
+                            CastCarousel(people: item.directorsOrCreators.map(PersonDisplayItem.init))
+                        }
+                    }
 
-                    personalSection
+                    if !item.cast.isEmpty {
+                        SectionBlock(title: "Reparto") {
+                            CastCarousel(people: item.cast.map(PersonDisplayItem.init))
+                        }
+                    }
+
+                    if item.status == .watched {
+                        SectionBlock(title: "Tu registro") {
+                            personalRegistry
+                        }
+                    }
 
                     if item.status == .wantToWatch {
                         ReasonAddedField(item: item)
@@ -44,8 +69,8 @@ struct SavedDetailView: View {
 
                     secondaryActions
                 }
-                .padding(.horizontal, Spacing.md)
-                .padding(.top, Spacing.lg)
+                .padding(.horizontal, Spacing.screenMargin)
+                .padding(.top, MediaDetailHero.posterOverlap + Spacing.sm)
                 .padding(.bottom, item.status == .wantToWatch ? Spacing.xxl + 60 : Spacing.xl)
             }
         }
@@ -56,9 +81,8 @@ struct SavedDetailView: View {
                 SlideToMarkWatchedView {
                     showingCompletionSheet = true
                 }
-                .padding(.horizontal, Spacing.md)
+                .padding(.horizontal, Spacing.screenMargin)
                 .padding(.bottom, Spacing.sm)
-                .background(.clear)
             }
         }
         .sheet(isPresented: $showingCompletionSheet) {
@@ -78,33 +102,30 @@ struct SavedDetailView: View {
     }
 
     @ViewBuilder
-    private var personalSection: some View {
-        if item.status == .watched {
-            VStack(alignment: .leading, spacing: Spacing.sm) {
-                Text("Tu registro")
-                    .font(.headline)
+    private var personalRegistry: some View {
+        VStack(alignment: .leading, spacing: Spacing.sm) {
+            if let watchedAt = item.watchedAt {
+                Text("Vista el \(watchedAt.formatted(date: .long, time: .omitted))")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
 
-                if let watchedAt = item.watchedAt {
-                    Text("Vista el \(watchedAt.formatted(date: .long, time: .omitted))")
+            if let impact = item.personalImpact {
+                HStack(spacing: Spacing.xs) {
+                    Text("Impacto personal")
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                    ImpactBadge(value: impact)
                 }
+            }
 
-                if let impact = item.personalImpact {
-                    HStack(spacing: Spacing.xs) {
-                        Text("Impacto personal")
-                            .font(.subheadline)
-                        ImpactBadge(value: impact)
-                    }
-                }
-
-                if let note = item.personalNote, !note.isEmpty {
-                    Text(note)
-                        .font(.body)
-                        .padding(Spacing.sm)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: AppTheme.cardCornerRadius))
-                }
+            if let note = item.personalNote, !note.isEmpty {
+                Text(note)
+                    .font(.body)
+                    .lineSpacing(3)
+                    .padding(Spacing.md)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(.thinMaterial, in: RoundedRectangle(cornerRadius: AppTheme.cardCornerRadius, style: .continuous))
+                    .glassBorder(cornerRadius: AppTheme.cardCornerRadius)
             }
         }
     }
@@ -113,15 +134,21 @@ struct SavedDetailView: View {
     private var secondaryActions: some View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
             if item.status == .watched {
-                Button("Editar nota e impacto") {
+                Button {
                     showingCompletionSheet = true
+                } label: {
+                    Label("Editar nota e impacto", systemImage: "pencil")
                 }
-                Button("Mover a Quiero ver") {
+                Button {
                     item.moveBackToWantToWatch()
+                } label: {
+                    Label("Mover a Quiero ver", systemImage: "arrow.uturn.backward")
                 }
             }
-            Button("Eliminar de la biblioteca", role: .destructive) {
+            Button(role: .destructive) {
                 showingDeleteConfirmation = true
+            } label: {
+                Label("Eliminar de la biblioteca", systemImage: "trash")
             }
         }
         .font(.subheadline)

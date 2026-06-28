@@ -19,6 +19,10 @@ struct SlideToMarkWatchedView: View {
                 Capsule()
                     .fill(.thinMaterial)
 
+                Capsule()
+                    .fill(Color.accentColor.opacity(0.16))
+                    .frame(width: knobSize + horizontalPadding * 2 + dragOffset)
+
                 Text("Desliza para marcar como vista")
                     .foregroundStyle(.secondary)
                     .font(.subheadline.weight(.medium))

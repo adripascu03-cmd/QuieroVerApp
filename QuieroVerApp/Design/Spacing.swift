@@ -9,4 +9,7 @@ enum Spacing {
     static let lg: CGFloat = 24
     static let xl: CGFloat = 32
     static let xxl: CGFloat = 48
+
+    /// Margen horizontal estándar de pantalla completa (fichas, listas).
+    static let screenMargin: CGFloat = 20
 }
