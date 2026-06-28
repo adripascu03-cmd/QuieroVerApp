@@ -8,6 +8,7 @@ enum LibraryFilter: String, CaseIterable, Identifiable, Equatable {
     case impacto
     case peliculas
     case series
+    case directores
 
     var id: String { rawValue }
 
@@ -17,6 +18,7 @@ enum LibraryFilter: String, CaseIterable, Identifiable, Equatable {
         case .impacto: return "Impacto"
         case .peliculas: return "Películas"
         case .series: return "Series"
+        case .directores: return "Directores"
         }
     }
 
@@ -24,7 +26,7 @@ enum LibraryFilter: String, CaseIterable, Identifiable, Equatable {
         switch self {
         case .peliculas: return .movie
         case .series: return .tv
-        case .recientes, .impacto: return nil
+        case .recientes, .impacto, .directores: return nil
         }
     }
 }
