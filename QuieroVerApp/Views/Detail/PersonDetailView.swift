@@ -4,6 +4,7 @@ import SwiftData
 /// Ficha de una persona (actor, actriz, director, creador...). Recibe
 /// solo lo mínimo del punto de entrada (id, nombre y foto) para poder
 /// mostrar algo de inmediato mientras carga el resto desde TMDb.
+@MainActor
 struct PersonDetailView: View {
     let personId: Int
     let initialName: String
