@@ -22,6 +22,7 @@ final class MediaItem {
     var runtimeMinutes: Int?
     var numberOfSeasons: Int?
     var numberOfEpisodes: Int?
+    var voteAverage: Double?
 
     var statusRaw: String
     var addedAt: Date
@@ -53,6 +54,7 @@ final class MediaItem {
         runtimeMinutes: Int? = nil,
         numberOfSeasons: Int? = nil,
         numberOfEpisodes: Int? = nil,
+        voteAverage: Double? = nil,
         status: WatchStatus = .wantToWatch,
         reasonAdded: String? = nil,
         genres: [Genre] = [],
@@ -71,6 +73,7 @@ final class MediaItem {
         self.runtimeMinutes = runtimeMinutes
         self.numberOfSeasons = numberOfSeasons
         self.numberOfEpisodes = numberOfEpisodes
+        self.voteAverage = voteAverage
         self.statusRaw = status.rawValue
         self.addedAt = .now
         self.watchedAt = nil

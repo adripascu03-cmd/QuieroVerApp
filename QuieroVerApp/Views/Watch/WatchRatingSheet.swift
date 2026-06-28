@@ -1,20 +1,28 @@
 import SwiftUI
 
-/// Modal de cierre reflexivo, tras marcar como vista (o al editar más
-/// adelante). No es un formulario: nada es obligatorio salvo la fecha,
-/// que ya viene rellenada por defecto. Cada bloque vive en su propia
-/// tarjeta de material translúcido, consistente con el resto de la app.
-struct RefinedCompletionSheet: View {
+/// Bottom sheet de cierre tras marcar como vista (o al editar más
+/// adelante): valoración por estrellas + nota + fecha. Nada obligatorio
+/// salvo la fecha, que ya viene rellenada por defecto.
+///
+/// `personalImpact` sigue siendo 0-10 en el modelo; aquí solo se
+/// presenta como 1-5 estrellas (×2 al guardar) para no tocar el dato
+/// persistido ni migrar nada.
+struct WatchRatingSheet: View {
     @Bindable var item: MediaItem
     @Environment(\.dismiss) private var dismiss
 
-    @State private var impact: Double
+    @State private var rating: Int
     @State private var note: String
     @State private var watchedAt: Date
 
-    init(item: MediaItem) {
+    /// `initialRating` ya viene elegido si se llega desde el flujo de
+    /// "marcar como vista" (selector de estrellas en la propia ficha).
+    /// Si se omite (p. ej. al editar un item ya visto), se deriva del
+    /// impacto ya guardado.
+    init(item: MediaItem, initialRating: Int? = nil) {
         self.item = item
-        _impact = State(initialValue: item.personalImpact ?? 5)
+        let derived = initialRating ?? Int(((item.personalImpact ?? 6) / 2).rounded())
+        _rating = State(initialValue: min(max(derived, 1), 5))
         _note = State(initialValue: item.personalNote ?? "")
         _watchedAt = State(initialValue: item.watchedAt ?? .now)
     }
@@ -23,7 +31,7 @@ struct RefinedCompletionSheet: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: Spacing.xl) {
-                    impactCard
+                    ratingCard
                     noteCard
                     dateRow
 
@@ -46,16 +54,11 @@ struct RefinedCompletionSheet: View {
         .presentationDragIndicator(.visible)
     }
 
-    private var impactCard: some View {
+    private var ratingCard: some View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
-            HStack {
-                Text("Impacto personal")
-                    .font(.headline)
-                Spacer()
-                ImpactBadge(value: impact)
-            }
-            Slider(value: $impact, in: 0...10, step: 0.5)
-                .tint(Color.accentColor)
+            Text("Impacto personal")
+                .font(.headline)
+            StarRatingPicker(rating: $rating)
         }
         .padding(Spacing.md)
         .background(.thinMaterial, in: RoundedRectangle(cornerRadius: AppTheme.cardCornerRadius, style: .continuous))
@@ -94,7 +97,7 @@ struct RefinedCompletionSheet: View {
 
     private func save() {
         item.markAsWatched(
-            impact: impact,
+            impact: Double(rating) * 2,
             note: note.isEmpty ? nil : note,
             watchedAt: watchedAt
         )

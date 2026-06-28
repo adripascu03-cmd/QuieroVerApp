@@ -66,6 +66,7 @@ struct TMDbMovieDetailsDTO: Decodable {
     let genres: [TMDbGenreDTO]
     let posterPath: String?
     let backdropPath: String?
+    let voteAverage: Double?
 
     enum CodingKeys: String, CodingKey {
         case id, title, overview, runtime, genres
@@ -73,6 +74,7 @@ struct TMDbMovieDetailsDTO: Decodable {
         case releaseDate = "release_date"
         case posterPath = "poster_path"
         case backdropPath = "backdrop_path"
+        case voteAverage = "vote_average"
     }
 }
 
@@ -99,6 +101,7 @@ struct TMDbTVDetailsDTO: Decodable {
     let posterPath: String?
     let backdropPath: String?
     let createdBy: [TMDbCreatedByDTO]
+    let voteAverage: Double?
 
     enum CodingKeys: String, CodingKey {
         case id, name, overview, genres
@@ -109,6 +112,7 @@ struct TMDbTVDetailsDTO: Decodable {
         case posterPath = "poster_path"
         case backdropPath = "backdrop_path"
         case createdBy = "created_by"
+        case voteAverage = "vote_average"
     }
 }
 
@@ -255,6 +259,7 @@ struct MediaDetails {
     let runtimeMinutes: Int?
     let numberOfSeasons: Int?
     let numberOfEpisodes: Int?
+    let voteAverage: Double?
     let genres: [TMDbGenreDTO]
     let creatorsOrDirectors: [PersonDTO]
     let cast: [PersonDTO]
@@ -325,7 +330,8 @@ struct PersonDetails {
     let placeOfBirth: String?
     let knownForDepartment: String?
     let profilePath: String?
-    let filmography: [PersonCreditItem]
+    let actingCredits: [PersonCreditItem]
+    let directingCredits: [PersonCreditItem]
 
     var roleLabel: String {
         switch knownForDepartment {
@@ -335,10 +341,6 @@ struct PersonDetails {
         case "Production": return "Producción"
         default: return knownForDepartment ?? ""
         }
-    }
-
-    var filmographyTitle: String {
-        knownForDepartment == "Directing" ? "Dirección" : "Filmografía"
     }
 }
 

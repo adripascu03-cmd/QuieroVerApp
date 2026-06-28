@@ -1,17 +1,15 @@
 import SwiftUI
 
-/// Línea compacta de dirección/creación: avatar circular pequeño +
-/// "Dirección · Nombre". Pensada para vivir DENTRO de `GlassInfoPanel`,
-/// junto al título y los metadatos — no como elemento flotante propio,
-/// para que componga como parte del mismo grupo en vez de sentirse
-/// suelta sobre el backdrop.
+/// Tarjeta de dirección/creación: foto grande, nombre, pulsable. Vive
+/// como su propia sección en la ficha de detalle (entre Sinopsis y
+/// Reparto), con el título "Dirección"/"Creación" aportado por el
+/// `SectionBlock` que la envuelve — bien integrada, no un badge suelto.
 ///
 /// `onTap` sigue el mismo patrón que `CastPersonChip`: si se
-/// proporciona, la línea se vuelve pulsable con el mismo feedback
+/// proporciona, la tarjeta se vuelve pulsable con el mismo feedback
 /// táctil que el resto de la app.
-struct DirectorBadge: View {
+struct DirectorSection: View {
     let person: PersonDisplayItem
-    let roleLabel: String
     var onTap: (() -> Void)? = nil
 
     var body: some View {
@@ -24,12 +22,24 @@ struct DirectorBadge: View {
     }
 
     private var content: some View {
-        HStack(spacing: 6) {
-            PersonAvatarImage(person: person, size: 22)
-            Text("\(roleLabel) · \(person.name)")
-                .font(.caption.weight(.medium))
-                .foregroundStyle(.secondary)
-                .lineLimit(1)
+        HStack(spacing: Spacing.md) {
+            PersonAvatarImage(person: person, size: 56)
+
+            Text(person.name)
+                .font(.headline)
+                .foregroundStyle(.primary)
+                .lineLimit(2)
+
+            Spacer(minLength: Spacing.xs)
+
+            if onTap != nil {
+                Image(systemName: "chevron.right")
+                    .foregroundStyle(.tertiary)
+                    .font(.footnote.weight(.semibold))
+            }
         }
+        .padding(Spacing.sm)
+        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: AppTheme.cardCornerRadius, style: .continuous))
+        .glassBorder(cornerRadius: AppTheme.cardCornerRadius)
     }
 }

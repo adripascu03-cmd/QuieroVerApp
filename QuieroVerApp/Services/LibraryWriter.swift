@@ -39,6 +39,7 @@ enum LibraryWriter {
             runtimeMinutes: details.runtimeMinutes,
             numberOfSeasons: details.numberOfSeasons,
             numberOfEpisodes: details.numberOfEpisodes,
+            voteAverage: details.voteAverage,
             genres: genres,
             people: people
         )

@@ -2,14 +2,21 @@ import SwiftUI
 import SwiftData
 
 /// Ficha de un item ya guardado, en "Quiero ver" o en "Vistas".
-/// Misma estructura objetiva (TMDb) + sección personal cuando aplica.
+/// Jerarquía: portada → título/género → metadatos esenciales →
+/// sinopsis → dirección/creación → reparto → registro personal/acciones.
 struct SavedDetailView: View {
     @Bindable var item: MediaItem
+
+    @Binding var isTabBarHidden: Bool
+    var onJumpToRoot: (() -> Void)? = nil
 
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
 
-    @State private var showingCompletionSheet = false
+    @State private var isRatingInline = false
+    @State private var inlineRating = 3
+    @State private var sheetInitialRating: Int?
+    @State private var showingRatingSheet = false
     @State private var showingDeleteConfirmation = false
     @State private var selectedPerson: PersonNavigationTarget?
 
@@ -30,31 +37,26 @@ struct SavedDetailView: View {
                                 .font(.title2.bold())
                                 .multilineTextAlignment(.center)
                                 .fixedSize(horizontal: false, vertical: true)
-                            Text(metaLine)
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                            if let director = item.directorsOrCreators.first.map(PersonDisplayItem.init) {
-                                DirectorBadge(person: director, roleLabel: item.creditSectionLabel) {
-                                    selectedPerson = PersonNavigationTarget(director)
-                                }
-                            }
                             GenreChips(names: item.genres.map(\.name))
                         }
                         .frame(maxWidth: .infinity)
                     }
 
+                    MetricChipsRow(chips: metricChips)
+
                     SectionBlock(title: "Sinopsis") {
                         Text(item.overview?.isEmpty == false ? item.overview! : "Sin sinopsis disponible.")
                             .font(.body)
-                            .lineSpacing(4)
+                            .lineSpacing(5)
                             .foregroundStyle(item.overview?.isEmpty == false ? .primary : .secondary)
                             .fixedSize(horizontal: false, vertical: true)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                     }
 
-                    if !item.directorsOrCreators.isEmpty {
+                    if let director = item.directorsOrCreators.first.map(PersonDisplayItem.init) {
                         SectionBlock(title: item.creditSectionLabel) {
-                            CastCarousel(people: item.directorsOrCreators.map(PersonDisplayItem.init)) { person in
-                                selectedPerson = PersonNavigationTarget(person)
+                            DirectorSection(person: director) {
+                                selectedPerson = PersonNavigationTarget(director)
                             }
                         }
                     }
@@ -75,35 +77,40 @@ struct SavedDetailView: View {
 
                     if item.status == .wantToWatch {
                         ReasonAddedField(item: item)
+                        watchActions
                     }
 
                     secondaryActions
                 }
                 .padding(.horizontal, Spacing.screenMargin)
                 .padding(.top, MediaHeroHeader.posterOverlap + Spacing.sm)
-                .padding(.bottom, item.status == .wantToWatch ? Spacing.xxl + 60 : Spacing.xl)
+                .padding(.bottom, Spacing.xl)
             }
         }
         .ignoresSafeArea(edges: .top)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            if onJumpToRoot != nil {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        onJumpToRoot?()
+                    } label: {
+                        Image(systemName: "books.vertical.fill")
+                    }
+                    .accessibilityLabel("Volver a la galería")
+                }
+            }
+        }
         .navigationDestination(item: $selectedPerson) { target in
             PersonDetailView(
                 personId: target.personId,
                 initialName: target.name,
-                initialProfilePath: target.profilePath
+                initialProfilePath: target.profilePath,
+                onJumpToRoot: onJumpToRoot
             )
         }
-        .safeAreaInset(edge: .bottom) {
-            if item.status == .wantToWatch {
-                SlideToMarkWatchedView {
-                    showingCompletionSheet = true
-                }
-                .padding(.horizontal, Spacing.screenMargin)
-                .padding(.bottom, Spacing.md)
-            }
-        }
-        .sheet(isPresented: $showingCompletionSheet) {
-            RefinedCompletionSheet(item: item)
+        .sheet(isPresented: $showingRatingSheet) {
+            WatchRatingSheet(item: item, initialRating: sheetInitialRating)
         }
         .confirmationDialog(
             "¿Eliminar de tu biblioteca?",
@@ -116,6 +123,37 @@ struct SavedDetailView: View {
             }
             Button("Cancelar", role: .cancel) {}
         }
+        .onAppear {
+            withAnimation { isTabBarHidden = true }
+        }
+        .onDisappear {
+            withAnimation { isTabBarHidden = false }
+        }
+    }
+
+    @ViewBuilder
+    private var watchActions: some View {
+        if isRatingInline {
+            VStack(alignment: .leading, spacing: Spacing.sm) {
+                Text("¿Cuánto te ha gustado?")
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(.secondary)
+                StarRatingPicker(rating: $inlineRating) { rating in
+                    sheetInitialRating = rating
+                    showingRatingSheet = true
+                }
+            }
+            .padding(Spacing.md)
+            .background(.thinMaterial, in: RoundedRectangle(cornerRadius: AppTheme.cardCornerRadius, style: .continuous))
+            .glassBorder(cornerRadius: AppTheme.cardCornerRadius)
+            .transition(.opacity.combined(with: .move(edge: .top)))
+        } else {
+            PrimaryGlassButton(title: "Marcar como vista", systemImage: "checkmark.circle.fill") {
+                withAnimation(.easeInOut(duration: 0.25)) {
+                    isRatingInline = true
+                }
+            }
+        }
     }
 
     @ViewBuilder
@@ -127,11 +165,13 @@ struct SavedDetailView: View {
                     .foregroundStyle(.secondary)
             }
 
-            if let impact = item.personalImpact {
-                HStack(spacing: Spacing.xs) {
-                    Text("Impacto personal")
-                        .font(.subheadline)
-                    ImpactBadge(value: impact)
+            if let starRating {
+                HStack(spacing: 4) {
+                    ForEach(1...5, id: \.self) { value in
+                        Image(systemName: value <= starRating ? "star.fill" : "star")
+                            .foregroundStyle(value <= starRating ? Color.yellow : Color.secondary.opacity(0.4))
+                            .font(.subheadline)
+                    }
                 }
             }
 
@@ -152,7 +192,8 @@ struct SavedDetailView: View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
             if item.status == .watched {
                 Button {
-                    showingCompletionSheet = true
+                    sheetInitialRating = nil
+                    showingRatingSheet = true
                 } label: {
                     Label("Editar nota e impacto", systemImage: "pencil")
                 }
@@ -172,15 +213,24 @@ struct SavedDetailView: View {
         .padding(.top, Spacing.sm)
     }
 
-    private var metaLine: String {
-        var parts = [item.mediaType.displayName]
-        if let year = item.year { parts.append(String(year)) }
+    private var starRating: Int? {
+        item.personalImpact.map { Int(($0 / 2).rounded()) }
+    }
+
+    private var metricChips: [MetricChip.Item] {
+        var chips: [MetricChip.Item] = [.init(label: "Tipo", value: item.mediaType.displayName)]
+        if let year = item.year {
+            chips.append(.init(label: "Año", value: String(year)))
+        }
         if item.mediaType == .movie, let runtime = item.runtimeMinutes, runtime > 0 {
-            parts.append("\(runtime) min")
+            chips.append(.init(label: "Duración", value: "\(runtime) min"))
         }
         if item.mediaType == .tv, let seasons = item.numberOfSeasons, seasons > 0 {
-            parts.append(seasons == 1 ? "1 temporada" : "\(seasons) temporadas")
+            chips.append(.init(label: "Temporadas", value: seasons == 1 ? "1" : "\(seasons)"))
         }
-        return parts.joined(separator: " · ")
+        if let vote = item.voteAverage, vote > 0 {
+            chips.append(.init(label: "Valoración", value: String(format: "★ %.1f", vote)))
+        }
+        return chips
     }
 }

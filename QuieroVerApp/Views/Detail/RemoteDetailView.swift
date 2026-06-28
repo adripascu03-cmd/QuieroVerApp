@@ -10,6 +10,7 @@ import SwiftData
 struct RemoteDetailView: View {
     let result: MediaSearchResult
     var onAdded: (() -> Void)? = nil
+    var onJumpToRoot: (() -> Void)? = nil
 
     @Environment(\.modelContext) private var modelContext
     @State private var viewModel = RemoteDetailViewModel()
@@ -34,11 +35,24 @@ struct RemoteDetailView: View {
         }
         .ignoresSafeArea(edges: .top)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            if onJumpToRoot != nil {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        onJumpToRoot?()
+                    } label: {
+                        Image(systemName: "books.vertical.fill")
+                    }
+                    .accessibilityLabel("Volver a la galería")
+                }
+            }
+        }
         .navigationDestination(item: $selectedPerson) { target in
             PersonDetailView(
                 personId: target.personId,
                 initialName: target.name,
-                initialProfilePath: target.profilePath
+                initialProfilePath: target.profilePath,
+                onJumpToRoot: onJumpToRoot
             )
         }
         .task {
@@ -63,31 +77,26 @@ struct RemoteDetailView: View {
                             .font(.title2.bold())
                             .multilineTextAlignment(.center)
                             .fixedSize(horizontal: false, vertical: true)
-                        Text(metaLine(details))
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                        if let director = details.creatorsOrDirectors.first.map(PersonDisplayItem.init) {
-                            DirectorBadge(person: director, roleLabel: details.creditSectionLabel) {
-                                selectedPerson = PersonNavigationTarget(director)
-                            }
-                        }
                         GenreChips(names: details.genres.map(\.name))
                     }
                     .frame(maxWidth: .infinity)
                 }
 
+                MetricChipsRow(chips: metricChips(details))
+
                 SectionBlock(title: "Sinopsis") {
                     Text(details.overview?.isEmpty == false ? details.overview! : "Sin sinopsis disponible.")
                         .font(.body)
-                        .lineSpacing(4)
+                        .lineSpacing(5)
                         .foregroundStyle(details.overview?.isEmpty == false ? .primary : .secondary)
                         .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
 
-                if !details.creatorsOrDirectors.isEmpty {
+                if let director = details.creatorsOrDirectors.first.map(PersonDisplayItem.init) {
                     SectionBlock(title: details.creditSectionLabel) {
-                        CastCarousel(people: details.creatorsOrDirectors.map(PersonDisplayItem.init)) { person in
-                            selectedPerson = PersonNavigationTarget(person)
+                        DirectorSection(person: director) {
+                            selectedPerson = PersonNavigationTarget(director)
                         }
                     }
                 }
@@ -115,16 +124,21 @@ struct RemoteDetailView: View {
         }
     }
 
-    private func metaLine(_ details: MediaDetails) -> String {
-        var parts = [details.mediaType.displayName]
-        if let year = details.year { parts.append(String(year)) }
+    private func metricChips(_ details: MediaDetails) -> [MetricChip.Item] {
+        var chips: [MetricChip.Item] = [.init(label: "Tipo", value: details.mediaType.displayName)]
+        if let year = details.year {
+            chips.append(.init(label: "Año", value: String(year)))
+        }
         if details.mediaType == .movie, let runtime = details.runtimeMinutes, runtime > 0 {
-            parts.append("\(runtime) min")
+            chips.append(.init(label: "Duración", value: "\(runtime) min"))
         }
         if details.mediaType == .tv, let seasons = details.numberOfSeasons, seasons > 0 {
-            parts.append(seasons == 1 ? "1 temporada" : "\(seasons) temporadas")
+            chips.append(.init(label: "Temporadas", value: seasons == 1 ? "1" : "\(seasons)"))
         }
-        return parts.joined(separator: " · ")
+        if let vote = details.voteAverage, vote > 0 {
+            chips.append(.init(label: "Valoración", value: String(format: "★ %.1f", vote)))
+        }
+        return chips
     }
 
     private func addToLibrary(_ details: MediaDetails) {

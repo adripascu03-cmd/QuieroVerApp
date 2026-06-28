@@ -129,6 +129,7 @@ final class TMDbClient {
             runtimeMinutes: details.runtime,
             numberOfSeasons: nil,
             numberOfEpisodes: nil,
+            voteAverage: details.voteAverage,
             genres: details.genres,
             creatorsOrDirectors: directors,
             cast: cast
@@ -193,6 +194,7 @@ final class TMDbClient {
             runtimeMinutes: nil,
             numberOfSeasons: details.numberOfSeasons,
             numberOfEpisodes: details.numberOfEpisodes,
+            voteAverage: details.voteAverage,
             genres: details.genres,
             creatorsOrDirectors: creators,
             cast: cast
@@ -217,13 +219,29 @@ final class TMDbClient {
             }
         }
 
-        let sourceCredits = details.knownForDepartment == "Directing"
-            ? credits.crew.filter { $0.job == "Director" }
-            : credits.cast
+        let actingCredits = makeFilmography(credits.cast)
+        let directingCredits = makeFilmography(credits.crew.filter { $0.job == "Director" })
 
+        return PersonDetails(
+            tmdbId: details.id,
+            name: details.name,
+            biography: biography,
+            birthday: TMDbDateParsing.date(from: details.birthday),
+            deathday: TMDbDateParsing.date(from: details.deathday),
+            placeOfBirth: details.placeOfBirth,
+            knownForDepartment: details.knownForDepartment,
+            profilePath: details.profilePath,
+            actingCredits: actingCredits,
+            directingCredits: directingCredits
+        )
+    }
+
+    /// Construye y ordena una lista de créditos (reparto o equipo),
+    /// sin duplicados por (tipo, id).
+    private func makeFilmography(_ credits: [TMDbPersonCreditDTO]) -> [PersonCreditItem] {
         var seen = Set<String>()
         var filmography: [PersonCreditItem] = []
-        for credit in sourceCredits {
+        for credit in credits {
             guard let mediaTypeRaw = credit.mediaType, let mediaType = MediaType(rawValue: mediaTypeRaw) else { continue }
             let key = "\(mediaType.rawValue)-\(credit.id)"
             guard !seen.contains(key) else { continue }
@@ -244,18 +262,7 @@ final class TMDbClient {
             )
         }
         filmography.sort { ($0.year ?? 0) > ($1.year ?? 0) }
-
-        return PersonDetails(
-            tmdbId: details.id,
-            name: details.name,
-            biography: biography,
-            birthday: TMDbDateParsing.date(from: details.birthday),
-            deathday: TMDbDateParsing.date(from: details.deathday),
-            placeOfBirth: details.placeOfBirth,
-            knownForDepartment: details.knownForDepartment,
-            profilePath: details.profilePath,
-            filmography: filmography
-        )
+        return filmography
     }
 
     /// Reintenta solo la sinopsis en inglés si la versión es-ES llegó vacía.
