@@ -6,6 +6,6 @@ struct QuieroVerApp: App {
         WindowGroup {
             RootView()
         }
-        .modelContainer(for: MediaItem.self)
+        .modelContainer(for: [MediaItem.self, FavoritePerson.self])
     }
 }

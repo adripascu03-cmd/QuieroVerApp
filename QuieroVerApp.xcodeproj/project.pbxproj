@@ -8,6 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		2B2B2B2B2B2B2B2B2B2B0002 /* QuieroVerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0001 /* QuieroVerApp.swift */; };
+		2B2B2B2B2B2B2B2B2B2B0075 /* FavoritePerson.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0074 /* FavoritePerson.swift */; };
+		2B2B2B2B2B2B2B2B2B2B0077 /* PersonDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0076 /* PersonDetailViewModel.swift */; };
+		2B2B2B2B2B2B2B2B2B2B0079 /* PersonNavigationTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0078 /* PersonNavigationTarget.swift */; };
+		2B2B2B2B2B2B2B2B2B2B007B /* PersonDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B007A /* PersonDetailView.swift */; };
+		2B2B2B2B2B2B2B2B2B2B007D /* PersonSearchResultRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B007C /* PersonSearchResultRow.swift */; };
+		2B2B2B2B2B2B2B2B2B2B007F /* FavoritePersonsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B007E /* FavoritePersonsSection.swift */; };
 		2B2B2B2B2B2B2B2B2B2B006D /* CompactAddCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B006C /* CompactAddCard.swift */; };
 		2B2B2B2B2B2B2B2B2B2B006F /* PersonAvatarImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B006E /* PersonAvatarImage.swift */; };
 		2B2B2B2B2B2B2B2B2B2B0071 /* DirectorBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0070 /* DirectorBadge.swift */; };
@@ -62,6 +68,12 @@
 		1A1A1A1A1A1A1A1A1A1A1A06 /* QuieroVerApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QuieroVerApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A1A1A1A1A1A1A1A1A1A1A07 /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B0001 /* QuieroVerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuieroVerApp.swift; sourceTree = "<group>"; };
+		2B2B2B2B2B2B2B2B2B2B0074 /* FavoritePerson.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritePerson.swift; sourceTree = "<group>"; };
+		2B2B2B2B2B2B2B2B2B2B0076 /* PersonDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonDetailViewModel.swift; sourceTree = "<group>"; };
+		2B2B2B2B2B2B2B2B2B2B0078 /* PersonNavigationTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonNavigationTarget.swift; sourceTree = "<group>"; };
+		2B2B2B2B2B2B2B2B2B2B007A /* PersonDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonDetailView.swift; sourceTree = "<group>"; };
+		2B2B2B2B2B2B2B2B2B2B007C /* PersonSearchResultRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonSearchResultRow.swift; sourceTree = "<group>"; };
+		2B2B2B2B2B2B2B2B2B2B007E /* FavoritePersonsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritePersonsSection.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B006C /* CompactAddCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompactAddCard.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B006E /* PersonAvatarImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonAvatarImage.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B0070 /* DirectorBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectorBadge.swift; sourceTree = "<group>"; };
@@ -165,6 +177,7 @@
 		2B2B2B2B2B2B2B2B2B2B0019 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				2B2B2B2B2B2B2B2B2B2B0074 /* FavoritePerson.swift */,
 				2B2B2B2B2B2B2B2B2B2B000D /* Genre.swift */,
 				2B2B2B2B2B2B2B2B2B2B000F /* MediaItem.swift */,
 				2B2B2B2B2B2B2B2B2B2B0011 /* MediaType.swift */,
@@ -201,6 +214,7 @@
 		2B2B2B2B2B2B2B2B2B2B002E /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				2B2B2B2B2B2B2B2B2B2B0076 /* PersonDetailViewModel.swift */,
 				2B2B2B2B2B2B2B2B2B2B002A /* RemoteDetailViewModel.swift */,
 				2B2B2B2B2B2B2B2B2B2B002C /* SearchViewModel.swift */,
 			);
@@ -210,6 +224,7 @@
 		2B2B2B2B2B2B2B2B2B2B0035 /* Detail */ = {
 			isa = PBXGroup;
 			children = (
+				2B2B2B2B2B2B2B2B2B2B007A /* PersonDetailView.swift */,
 				2B2B2B2B2B2B2B2B2B2B002F /* ReasonAddedField.swift */,
 				2B2B2B2B2B2B2B2B2B2B0031 /* RemoteDetailView.swift */,
 				2B2B2B2B2B2B2B2B2B2B0033 /* SavedDetailView.swift */,
@@ -232,6 +247,8 @@
 		2B2B2B2B2B2B2B2B2B2B0045 /* Search */ = {
 			isa = PBXGroup;
 			children = (
+				2B2B2B2B2B2B2B2B2B2B007E /* FavoritePersonsSection.swift */,
+				2B2B2B2B2B2B2B2B2B2B007C /* PersonSearchResultRow.swift */,
 				2B2B2B2B2B2B2B2B2B2B0041 /* SearchResultRow.swift */,
 				2B2B2B2B2B2B2B2B2B2B0043 /* SearchView.swift */,
 			);
@@ -253,6 +270,7 @@
 				2B2B2B2B2B2B2B2B2B2B004E /* MediaHeroHeader.swift */,
 				2B2B2B2B2B2B2B2B2B2B006E /* PersonAvatarImage.swift */,
 				2B2B2B2B2B2B2B2B2B2B0052 /* PersonDisplayItem.swift */,
+				2B2B2B2B2B2B2B2B2B2B0078 /* PersonNavigationTarget.swift */,
 				2B2B2B2B2B2B2B2B2B2B0054 /* PosterPlaceholder.swift */,
 				2B2B2B2B2B2B2B2B2B2B0068 /* PrimaryGlassButton.swift */,
 				2B2B2B2B2B2B2B2B2B2B006A /* SectionBlock.swift */,
@@ -367,6 +385,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				2B2B2B2B2B2B2B2B2B2B0002 /* QuieroVerApp.swift in Sources */,
+				2B2B2B2B2B2B2B2B2B2B0075 /* FavoritePerson.swift in Sources */,
+				2B2B2B2B2B2B2B2B2B2B0077 /* PersonDetailViewModel.swift in Sources */,
+				2B2B2B2B2B2B2B2B2B2B0079 /* PersonNavigationTarget.swift in Sources */,
+				2B2B2B2B2B2B2B2B2B2B007B /* PersonDetailView.swift in Sources */,
+				2B2B2B2B2B2B2B2B2B2B007D /* PersonSearchResultRow.swift in Sources */,
+				2B2B2B2B2B2B2B2B2B2B007F /* FavoritePersonsSection.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B006D /* CompactAddCard.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B006F /* PersonAvatarImage.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B0071 /* DirectorBadge.swift in Sources */,

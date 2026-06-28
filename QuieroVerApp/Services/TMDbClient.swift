@@ -17,7 +17,7 @@ final class TMDbClient {
 
     // MARK: - Búsqueda
 
-    func searchMedia(query: String) async throws -> [MediaSearchResult] {
+    func searchMedia(query: String) async throws -> [SearchResultItem] {
         let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return [] }
 
@@ -29,9 +29,25 @@ final class TMDbClient {
         return response.results.compactMap(normalize)
     }
 
-    private func normalize(_ dto: TMDbSearchResultDTO) -> MediaSearchResult? {
-        guard let mediaTypeRaw = dto.mediaType, let mediaType = MediaType(rawValue: mediaTypeRaw) else {
-            return nil // ignora "person" y otros tipos no soportados
+    private func normalize(_ dto: TMDbSearchResultDTO) -> SearchResultItem? {
+        guard let mediaTypeRaw = dto.mediaType else { return nil }
+
+        if mediaTypeRaw == "person" {
+            guard let name = dto.name, !name.isEmpty else { return nil }
+            let knownForTitles = (dto.knownFor ?? []).compactMap(\.displayTitle)
+            return .person(PersonSearchResult(
+                id: "person-\(dto.id)",
+                tmdbId: dto.id,
+                name: name,
+                profilePath: dto.profilePath,
+                knownForDepartment: dto.knownForDepartment,
+                gender: dto.gender,
+                knownForTitles: knownForTitles
+            ))
+        }
+
+        guard let mediaType = MediaType(rawValue: mediaTypeRaw) else {
+            return nil // ignora tipos no soportados
         }
 
         let title = mediaType == .movie ? (dto.title ?? "") : (dto.name ?? "")
@@ -40,7 +56,7 @@ final class TMDbClient {
         let originalTitle = mediaType == .movie ? dto.originalTitle : dto.originalName
         let releaseDate = mediaType == .movie ? dto.releaseDate : dto.firstAirDate
 
-        return MediaSearchResult(
+        return .media(MediaSearchResult(
             id: "\(mediaType.rawValue)-\(dto.id)",
             tmdbId: dto.id,
             mediaType: mediaType,
@@ -51,7 +67,7 @@ final class TMDbClient {
             backdropPath: dto.backdropPath,
             releaseDate: releaseDate,
             year: TMDbDateParsing.year(from: releaseDate)
-        )
+        ))
     }
 
     // MARK: - Detalle
@@ -180,6 +196,65 @@ final class TMDbClient {
             genres: details.genres,
             creatorsOrDirectors: creators,
             cast: cast
+        )
+    }
+
+    // MARK: - Personas
+
+    func fetchPersonDetails(id: Int) async throws -> PersonDetails {
+        async let detailsTask: TMDbPersonDetailsDTO = get(path: "/person/\(id)")
+        async let creditsTask: TMDbCombinedCreditsResponseDTO = get(path: "/person/\(id)/combined_credits")
+
+        let details = try await detailsTask
+        let credits = try await creditsTask
+
+        var biography = (details.biography?.isEmpty == false) ? details.biography : nil
+        if biography == nil {
+            struct BiographyDTO: Decodable { let biography: String? }
+            if let fallback: BiographyDTO = try? await get(path: "/person/\(id)", query: [], language: "en-US"),
+               fallback.biography?.isEmpty == false {
+                biography = fallback.biography
+            }
+        }
+
+        let sourceCredits = details.knownForDepartment == "Directing"
+            ? credits.crew.filter { $0.job == "Director" }
+            : credits.cast
+
+        var seen = Set<String>()
+        var filmography: [PersonCreditItem] = []
+        for credit in sourceCredits {
+            guard let mediaTypeRaw = credit.mediaType, let mediaType = MediaType(rawValue: mediaTypeRaw) else { continue }
+            let key = "\(mediaType.rawValue)-\(credit.id)"
+            guard !seen.contains(key) else { continue }
+            let title = mediaType == .movie ? (credit.title ?? "") : (credit.name ?? "")
+            guard !title.isEmpty else { continue }
+            let releaseDate = mediaType == .movie ? credit.releaseDate : credit.firstAirDate
+            seen.insert(key)
+            filmography.append(
+                PersonCreditItem(
+                    id: key,
+                    tmdbId: credit.id,
+                    mediaType: mediaType,
+                    title: title,
+                    posterPath: credit.posterPath,
+                    roleDescription: credit.character ?? credit.job,
+                    year: TMDbDateParsing.year(from: releaseDate)
+                )
+            )
+        }
+        filmography.sort { ($0.year ?? 0) > ($1.year ?? 0) }
+
+        return PersonDetails(
+            tmdbId: details.id,
+            name: details.name,
+            biography: biography,
+            birthday: TMDbDateParsing.date(from: details.birthday),
+            deathday: TMDbDateParsing.date(from: details.deathday),
+            placeOfBirth: details.placeOfBirth,
+            knownForDepartment: details.knownForDepartment,
+            profilePath: details.profilePath,
+            filmography: filmography
         )
     }
 

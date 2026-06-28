@@ -18,6 +18,11 @@ struct TMDbSearchResultDTO: Decodable {
     let backdropPath: String?
     let releaseDate: String?
     let firstAirDate: String?
+    // Solo presentes cuando media_type == "person"
+    let profilePath: String?
+    let knownForDepartment: String?
+    let gender: Int?
+    let knownFor: [TMDbKnownForDTO]?
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -31,7 +36,19 @@ struct TMDbSearchResultDTO: Decodable {
         case backdropPath = "backdrop_path"
         case releaseDate = "release_date"
         case firstAirDate = "first_air_date"
+        case profilePath = "profile_path"
+        case knownForDepartment = "known_for_department"
+        case gender
+        case knownFor = "known_for"
     }
+}
+
+/// Una de las obras dentro de `known_for` de un resultado de persona.
+struct TMDbKnownForDTO: Decodable {
+    let title: String?
+    let name: String?
+
+    var displayTitle: String? { title ?? name }
 }
 
 struct TMDbGenreDTO: Decodable {
@@ -150,6 +167,54 @@ struct TMDbAggregateCreditsResponseDTO: Decodable {
     let crew: [TMDbCrewMemberDTO]
 }
 
+// MARK: - DTOs de ficha de persona
+
+struct TMDbPersonDetailsDTO: Decodable {
+    let id: Int
+    let name: String
+    let biography: String?
+    let birthday: String?
+    let deathday: String?
+    let placeOfBirth: String?
+    let knownForDepartment: String?
+    let profilePath: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, biography, birthday, deathday
+        case placeOfBirth = "place_of_birth"
+        case knownForDepartment = "known_for_department"
+        case profilePath = "profile_path"
+    }
+}
+
+/// Una entrada de `/person/{id}/combined_credits`: una película o
+/// serie en la que la persona participó, como reparto o como equipo.
+struct TMDbPersonCreditDTO: Decodable {
+    let id: Int
+    let mediaType: String?
+    let title: String?
+    let name: String?
+    let posterPath: String?
+    let character: String?
+    let job: String?
+    let releaseDate: String?
+    let firstAirDate: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id, character, job
+        case mediaType = "media_type"
+        case title, name
+        case posterPath = "poster_path"
+        case releaseDate = "release_date"
+        case firstAirDate = "first_air_date"
+    }
+}
+
+struct TMDbCombinedCreditsResponseDTO: Decodable {
+    let cast: [TMDbPersonCreditDTO]
+    let crew: [TMDbPersonCreditDTO]
+}
+
 // MARK: - Modelos normalizados internos
 
 struct MediaSearchResult: Identifiable, Hashable {
@@ -193,6 +258,88 @@ struct MediaDetails {
     let genres: [TMDbGenreDTO]
     let creatorsOrDirectors: [PersonDTO]
     let cast: [PersonDTO]
+}
+
+/// Resultado de búsqueda de tipo persona (actor, actriz, director...).
+struct PersonSearchResult: Identifiable, Hashable {
+    let id: String // "person-123"
+    let tmdbId: Int
+    let name: String
+    let profilePath: String?
+    let knownForDepartment: String?
+    let gender: Int?
+    let knownForTitles: [String]
+
+    /// "Actor" / "Actriz" / "Director" / "Conocido por X", lo más
+    /// específico que TMDb nos deje inferir sin pasarnos de listos.
+    var roleLabel: String {
+        switch knownForDepartment {
+        case "Acting":
+            return gender == 1 ? "Actriz" : "Actor"
+        case "Directing":
+            return "Director"
+        case "Writing":
+            return "Guionista"
+        case "Production":
+            return "Producción"
+        default:
+            if let first = knownForTitles.first {
+                return "Conocido por \(first)"
+            }
+            return "Persona"
+        }
+    }
+}
+
+/// Combina resultados de película/serie y de persona en una sola lista
+/// para la pantalla de búsqueda.
+enum SearchResultItem: Identifiable, Hashable {
+    case media(MediaSearchResult)
+    case person(PersonSearchResult)
+
+    var id: String {
+        switch self {
+        case .media(let result): return result.id
+        case .person(let person): return person.id
+        }
+    }
+}
+
+/// Una obra en la filmografía de una persona (como reparto o equipo).
+struct PersonCreditItem: Identifiable, Hashable {
+    let id: String
+    let tmdbId: Int
+    let mediaType: MediaType
+    let title: String
+    let posterPath: String?
+    let roleDescription: String?
+    let year: Int?
+}
+
+struct PersonDetails {
+    let tmdbId: Int
+    let name: String
+    let biography: String?
+    let birthday: Date?
+    let deathday: Date?
+    let placeOfBirth: String?
+    let knownForDepartment: String?
+    let profilePath: String?
+    let filmography: [PersonCreditItem]
+
+    var roleLabel: String {
+        switch knownForDepartment {
+        case "Acting": return "Actor / actriz"
+        case "Directing": return "Director"
+        case "Writing": return "Guionista"
+        case "Production": return "Producción"
+        default: return knownForDepartment ?? ""
+        }
+    }
+
+    var filmographyTitle: String {
+        knownForDepartment == "Directing" ? "Dirección" : "Filmografía"
+    }
 }
 
 // MARK: - Helpers de parseo de fecha "yyyy-MM-dd"

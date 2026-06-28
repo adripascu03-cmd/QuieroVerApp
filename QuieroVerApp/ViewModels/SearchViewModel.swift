@@ -3,7 +3,7 @@ import Foundation
 enum SearchState {
     case idle
     case loading
-    case loaded([MediaSearchResult])
+    case loaded([SearchResultItem])
     case empty
     case error(String)
 }
