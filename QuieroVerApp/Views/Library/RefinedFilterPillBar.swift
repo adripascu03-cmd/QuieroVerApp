@@ -29,9 +29,10 @@ enum LibraryFilter: String, CaseIterable, Identifiable, Equatable {
     }
 }
 
-/// Barra de píldoras de filtro, horizontal, con desborde hasta el borde
-/// de pantalla y selección única.
-struct FilterPillBar: View {
+/// Barra de píldoras de filtro: fina, con aire lateral real (sin
+/// truco de "bleed" — este componente no asume un padding ambiental
+/// del padre, así que el margen que declara es el margen real).
+struct RefinedFilterPillBar: View {
     let options: [LibraryFilter]
     @Binding var selection: LibraryFilter
 
@@ -43,9 +44,9 @@ struct FilterPillBar: View {
                         selection = option
                     } label: {
                         Text(option.label)
-                            .font(.subheadline.weight(.semibold))
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 9)
+                            .font(.footnote.weight(.semibold))
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 7)
                             .background(
                                 selection == option ? Color.accentColor : Color(.systemGray6)
                             )
@@ -57,6 +58,5 @@ struct FilterPillBar: View {
             }
             .padding(.horizontal, Spacing.screenMargin)
         }
-        .padding(.horizontal, -Spacing.screenMargin)
     }
 }

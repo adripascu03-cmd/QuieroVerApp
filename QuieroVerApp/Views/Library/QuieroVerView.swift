@@ -18,11 +18,8 @@ struct QuieroVerView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: Spacing.lg) {
+            VStack(alignment: .leading, spacing: Spacing.md) {
                 header
-
-                AddMediaCard { showingSearch = true }
-                    .padding(.horizontal, Spacing.screenMargin)
 
                 if allItems.isEmpty {
                     EmptyStateView(
@@ -31,7 +28,7 @@ struct QuieroVerView: View {
                     )
                     .padding(.top, Spacing.lg)
                 } else {
-                    FilterPillBar(options: [.recientes, .peliculas, .series], selection: $filter)
+                    RefinedFilterPillBar(options: [.recientes, .peliculas, .series], selection: $filter)
 
                     if items.isEmpty {
                         Text("No hay nada con este filtro.")
@@ -55,12 +52,21 @@ struct QuieroVerView: View {
     }
 
     private var header: some View {
-        VStack(alignment: .leading, spacing: Spacing.xxs) {
-            Text("Quiero ver")
-                .font(.largeTitle.bold())
-            Text(countLabel)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+        HStack(alignment: .top) {
+            VStack(alignment: .leading, spacing: Spacing.xxs) {
+                Text("Quiero ver")
+                    .font(.largeTitle.bold())
+                Text(countLabel)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            CompactAddCard {
+                showingSearch = true
+            }
+            .padding(.top, Spacing.xxs)
         }
         .padding(.horizontal, Spacing.screenMargin)
         .padding(.top, Spacing.sm)

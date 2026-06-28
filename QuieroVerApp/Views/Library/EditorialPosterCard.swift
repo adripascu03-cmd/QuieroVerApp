@@ -1,8 +1,10 @@
 import SwiftUI
 
-/// Tarjeta de poster para el grid: casi plana, sombra muy sutil,
-/// título debajo y, en Vistas, una cápsula discreta con el impacto.
-struct PosterCard: View {
+/// Tarjeta de poster para el grid. La geometría del poster es fija e
+/// idéntica en todas las tarjetas (vía `GeometryReader` + ratio 2:3
+/// forzado), así que un poster de TMDb con proporciones ligeramente
+/// distintas nunca rompe la retícula ni deforma la tarjeta.
+struct EditorialPosterCard: View {
     let item: MediaItem
     var showImpact: Bool = false
 
@@ -12,22 +14,26 @@ struct PosterCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.xs) {
-            ZStack(alignment: .bottomTrailing) {
-                AsyncPosterImage(url: posterURL, title: item.title, mediaType: item.mediaType)
-                    .aspectRatio(2 / 3, contentMode: .fill)
-                    .clipShape(RoundedRectangle(cornerRadius: AppTheme.posterCornerRadius, style: .continuous))
-                    .gridPosterShadow()
+            GeometryReader { proxy in
+                ZStack(alignment: .bottomTrailing) {
+                    AsyncPosterImage(url: posterURL, title: item.title, mediaType: item.mediaType)
+                        .frame(width: proxy.size.width, height: proxy.size.height)
+                        .clipShape(RoundedRectangle(cornerRadius: AppTheme.posterCornerRadius, style: .continuous))
+                        .gridPosterShadow()
 
-                if showImpact, let impact = item.personalImpact {
-                    ImpactBadge(value: impact)
-                        .padding(8)
+                    if showImpact, let impact = item.personalImpact {
+                        ImpactBadge(value: impact)
+                            .padding(8)
+                    }
                 }
             }
+            .aspectRatio(2 / 3, contentMode: .fit)
 
             Text(item.title)
                 .font(.caption.weight(.semibold))
                 .lineLimit(1)
                 .foregroundStyle(.primary)
+                .frame(maxWidth: .infinity, alignment: .leading)
 
             Text(item.displayYear)
                 .font(.caption2)

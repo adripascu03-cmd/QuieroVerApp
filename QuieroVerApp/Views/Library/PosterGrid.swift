@@ -16,7 +16,7 @@ struct PosterGrid: View {
         LazyVGrid(columns: columns, spacing: Spacing.lg) {
             ForEach(items) { item in
                 NavigationLink(value: item) {
-                    PosterCard(item: item, showImpact: showImpact)
+                    EditorialPosterCard(item: item, showImpact: showImpact)
                 }
                 .buttonStyle(PressableButtonStyle())
             }

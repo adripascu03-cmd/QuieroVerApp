@@ -20,7 +20,7 @@ struct VistasView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: Spacing.lg) {
+            VStack(alignment: .leading, spacing: Spacing.md) {
                 header
 
                 if allItems.isEmpty {
@@ -30,7 +30,7 @@ struct VistasView: View {
                     )
                     .padding(.top, Spacing.lg)
                 } else {
-                    FilterPillBar(
+                    RefinedFilterPillBar(
                         options: [.recientes, .impacto, .peliculas, .series],
                         selection: $filter
                     )
