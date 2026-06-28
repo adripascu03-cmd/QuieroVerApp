@@ -17,7 +17,7 @@ final class SearchViewModel {
     private let client: TMDbClient
     private var searchTask: Task<Void, Never>?
 
-    nonisolated init(client: TMDbClient = .shared) {
+    init(client: TMDbClient = .shared) {
         self.client = client
     }
 

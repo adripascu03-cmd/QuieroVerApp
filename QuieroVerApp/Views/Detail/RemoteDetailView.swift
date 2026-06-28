@@ -4,6 +4,7 @@ import SwiftData
 /// Ficha previa de un resultado de búsqueda, antes de añadirlo a la
 /// biblioteca. Carga el detalle completo de TMDb (sinopsis, reparto,
 /// dirección/creación) y ofrece el botón "Añadir a Quiero ver".
+@MainActor
 struct RemoteDetailView: View {
     let result: MediaSearchResult
 

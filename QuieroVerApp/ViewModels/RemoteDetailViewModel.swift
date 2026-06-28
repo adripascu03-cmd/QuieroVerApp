@@ -13,7 +13,7 @@ final class RemoteDetailViewModel {
 
     private let client: TMDbClient
 
-    nonisolated init(client: TMDbClient = .shared) {
+    init(client: TMDbClient = .shared) {
         self.client = client
     }
 
