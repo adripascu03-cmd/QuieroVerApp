@@ -4,13 +4,13 @@ import SwiftUI
 /// La app usa colores y tipografía del sistema; este tema solo afina
 /// detalles (radios, opacidades de sombra) para una sensación calmada.
 enum AppTheme {
-    static let posterCornerRadius: CGFloat = 14
+    static let posterCornerRadius: CGFloat = 16
     static let cardCornerRadius: CGFloat = 20
     static let sheetCornerRadius: CGFloat = 28
 
-    static let gridShadowRadius: CGFloat = 6
-    static let gridShadowOpacity: Double = 0.12
-    static let gridShadowY: CGFloat = 3
+    static let gridShadowRadius: CGFloat = 8
+    static let gridShadowOpacity: Double = 0.14
+    static let gridShadowY: CGFloat = 4
 
     static let detailShadowRadius: CGFloat = 16
     static let detailShadowOpacity: Double = 0.22

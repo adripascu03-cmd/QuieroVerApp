@@ -12,4 +12,10 @@ enum Spacing {
 
     /// Margen horizontal estándar de pantalla completa (fichas, listas).
     static let screenMargin: CGFloat = 20
+
+    /// Espacio entre columnas del grid de posters. Deliberadamente más
+    /// ajustado que `screenMargin` para que el margen exterior se lea
+    /// como el borde "contenedor" y el hueco entre tarjetas como algo
+    /// más íntimo — la retícula se siente más intencional así.
+    static let gridGutter: CGFloat = 14
 }

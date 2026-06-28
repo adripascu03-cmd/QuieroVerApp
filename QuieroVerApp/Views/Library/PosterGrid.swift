@@ -8,12 +8,12 @@ struct PosterGrid: View {
     var showImpact: Bool = false
 
     private let columns = [
-        GridItem(.flexible(), spacing: Spacing.md),
-        GridItem(.flexible(), spacing: Spacing.md)
+        GridItem(.flexible(), spacing: Spacing.gridGutter),
+        GridItem(.flexible(), spacing: Spacing.gridGutter)
     ]
 
     var body: some View {
-        LazyVGrid(columns: columns, spacing: Spacing.lg) {
+        LazyVGrid(columns: columns, spacing: Spacing.xl) {
             ForEach(items) { item in
                 NavigationLink(value: item) {
                     EditorialPosterCard(item: item, showImpact: showImpact)
