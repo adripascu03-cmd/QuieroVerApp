@@ -1,10 +1,14 @@
 import SwiftUI
 
-/// Insignia compacta de dirección/creación: avatar circular + nombre,
-/// pensada para vivir junto a la cabecera de la ficha de detalle.
+/// Línea compacta de dirección/creación: avatar circular pequeño +
+/// "Dirección · Nombre". Pensada para vivir DENTRO de `GlassInfoPanel`,
+/// junto al título y los metadatos — no como elemento flotante propio,
+/// para que componga como parte del mismo grupo en vez de sentirse
+/// suelta sobre el backdrop.
 ///
-/// `onTap` sigue el mismo patrón que `CastPersonChip`: preparado para
-/// una futura ficha de director/creador, sin comportamiento hoy.
+/// `onTap` sigue el mismo patrón que `CastPersonChip`: si se
+/// proporciona, la línea se vuelve pulsable con el mismo feedback
+/// táctil que el resto de la app.
 struct DirectorBadge: View {
     let person: PersonDisplayItem
     let roleLabel: String
@@ -13,28 +17,19 @@ struct DirectorBadge: View {
     var body: some View {
         if let onTap {
             Button(action: onTap) { content }
-                .buttonStyle(PressableButtonStyle(scale: 0.96))
+                .buttonStyle(PressableButtonStyle(scale: 0.97))
         } else {
             content
         }
     }
 
     private var content: some View {
-        HStack(spacing: Spacing.xs) {
-            PersonAvatarImage(person: person, size: 32)
-
-            VStack(alignment: .leading, spacing: 0) {
-                Text(roleLabel)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-                Text(person.name)
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.primary)
-            }
+        HStack(spacing: 6) {
+            PersonAvatarImage(person: person, size: 22)
+            Text("\(roleLabel) · \(person.name)")
+                .font(.caption.weight(.medium))
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
         }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 6)
-        .background(.thinMaterial, in: Capsule())
-        .overlay(Capsule().strokeBorder(Color.primary.opacity(0.08), lineWidth: 1))
     }
 }

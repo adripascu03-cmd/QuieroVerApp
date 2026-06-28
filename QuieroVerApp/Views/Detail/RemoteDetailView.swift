@@ -45,9 +45,7 @@ struct RemoteDetailView: View {
                 title: details.title,
                 mediaType: details.mediaType,
                 posterPath: details.posterPath,
-                backdropPath: details.backdropPath,
-                director: details.creatorsOrDirectors.first.map(PersonDisplayItem.init),
-                directorRoleLabel: details.creditSectionLabel
+                backdropPath: details.backdropPath
             )
 
             VStack(alignment: .leading, spacing: Spacing.xl) {
@@ -60,6 +58,9 @@ struct RemoteDetailView: View {
                         Text(metaLine(details))
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
+                        if let director = details.creatorsOrDirectors.first.map(PersonDisplayItem.init) {
+                            DirectorBadge(person: director, roleLabel: details.creditSectionLabel)
+                        }
                         GenreChips(names: details.genres.map(\.name))
                     }
                     .frame(maxWidth: .infinity)
