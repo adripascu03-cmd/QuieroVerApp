@@ -3,6 +3,12 @@ import SwiftUI
 /// Chip individual de metadato esencial (tipo, año, duración,
 /// valoración...), inspirado en la fila de métricas de Listy.
 struct MetricChip: View {
+    struct Item: Identifiable {
+        let label: String
+        let value: String
+        var id: String { label }
+    }
+
     let label: String
     let value: String
 
@@ -28,13 +34,7 @@ struct MetricChip: View {
 /// con margen de pantalla ya aplicado por el padre (igual que
 /// `CastCarousel`).
 struct MetricChipsRow: View {
-    struct Item: Identifiable {
-        let label: String
-        let value: String
-        var id: String { label }
-    }
-
-    let chips: [Item]
+    let chips: [MetricChip.Item]
 
     var body: some View {
         if !chips.isEmpty {
