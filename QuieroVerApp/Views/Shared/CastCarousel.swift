@@ -4,13 +4,18 @@ import SwiftUI
 /// Sin título propio: lo aporta el `SectionBlock` que lo envuelve.
 struct CastCarousel: View {
     let people: [PersonDisplayItem]
+    var onSelect: ((PersonDisplayItem) -> Void)? = nil
 
     var body: some View {
         if !people.isEmpty {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(alignment: .top, spacing: Spacing.md) {
                     ForEach(people) { person in
-                        CastPersonChip(person: person)
+                        if let onSelect {
+                            CastPersonChip(person: person) { onSelect(person) }
+                        } else {
+                            CastPersonChip(person: person)
+                        }
                     }
                 }
                 .padding(.horizontal, Spacing.screenMargin)

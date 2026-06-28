@@ -11,6 +11,7 @@ struct SavedDetailView: View {
 
     @State private var showingCompletionSheet = false
     @State private var showingDeleteConfirmation = false
+    @State private var selectedPerson: PersonNavigationTarget?
 
     var body: some View {
         ScrollView {
@@ -33,7 +34,9 @@ struct SavedDetailView: View {
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
                             if let director = item.directorsOrCreators.first.map(PersonDisplayItem.init) {
-                                DirectorBadge(person: director, roleLabel: item.creditSectionLabel)
+                                DirectorBadge(person: director, roleLabel: item.creditSectionLabel) {
+                                    selectedPerson = PersonNavigationTarget(director)
+                                }
                             }
                             GenreChips(names: item.genres.map(\.name))
                         }
@@ -50,13 +53,17 @@ struct SavedDetailView: View {
 
                     if !item.directorsOrCreators.isEmpty {
                         SectionBlock(title: item.creditSectionLabel) {
-                            CastCarousel(people: item.directorsOrCreators.map(PersonDisplayItem.init))
+                            CastCarousel(people: item.directorsOrCreators.map(PersonDisplayItem.init)) { person in
+                                selectedPerson = PersonNavigationTarget(person)
+                            }
                         }
                     }
 
                     if !item.cast.isEmpty {
                         SectionBlock(title: "Reparto") {
-                            CastCarousel(people: item.cast.map(PersonDisplayItem.init))
+                            CastCarousel(people: item.cast.map(PersonDisplayItem.init)) { person in
+                                selectedPerson = PersonNavigationTarget(person)
+                            }
                         }
                     }
 
@@ -79,6 +86,13 @@ struct SavedDetailView: View {
         }
         .ignoresSafeArea(edges: .top)
         .navigationBarTitleDisplayMode(.inline)
+        .navigationDestination(item: $selectedPerson) { target in
+            PersonDetailView(
+                personId: target.personId,
+                initialName: target.name,
+                initialProfilePath: target.profilePath
+            )
+        }
         .safeAreaInset(edge: .bottom) {
             if item.status == .wantToWatch {
                 SlideToMarkWatchedView {

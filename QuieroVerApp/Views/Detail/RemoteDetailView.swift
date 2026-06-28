@@ -14,6 +14,7 @@ struct RemoteDetailView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var viewModel = RemoteDetailViewModel()
     @State private var addedItem: MediaItem?
+    @State private var selectedPerson: PersonNavigationTarget?
 
     var body: some View {
         ScrollView {
@@ -33,6 +34,13 @@ struct RemoteDetailView: View {
         }
         .ignoresSafeArea(edges: .top)
         .navigationBarTitleDisplayMode(.inline)
+        .navigationDestination(item: $selectedPerson) { target in
+            PersonDetailView(
+                personId: target.personId,
+                initialName: target.name,
+                initialProfilePath: target.profilePath
+            )
+        }
         .task {
             await viewModel.load(result)
         }
@@ -59,7 +67,9 @@ struct RemoteDetailView: View {
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                         if let director = details.creatorsOrDirectors.first.map(PersonDisplayItem.init) {
-                            DirectorBadge(person: director, roleLabel: details.creditSectionLabel)
+                            DirectorBadge(person: director, roleLabel: details.creditSectionLabel) {
+                                selectedPerson = PersonNavigationTarget(director)
+                            }
                         }
                         GenreChips(names: details.genres.map(\.name))
                     }
@@ -76,13 +86,17 @@ struct RemoteDetailView: View {
 
                 if !details.creatorsOrDirectors.isEmpty {
                     SectionBlock(title: details.creditSectionLabel) {
-                        CastCarousel(people: details.creatorsOrDirectors.map(PersonDisplayItem.init))
+                        CastCarousel(people: details.creatorsOrDirectors.map(PersonDisplayItem.init)) { person in
+                            selectedPerson = PersonNavigationTarget(person)
+                        }
                     }
                 }
 
                 if !details.cast.isEmpty {
                     SectionBlock(title: "Reparto") {
-                        CastCarousel(people: details.cast.map(PersonDisplayItem.init))
+                        CastCarousel(people: details.cast.map(PersonDisplayItem.init)) { person in
+                            selectedPerson = PersonNavigationTarget(person)
+                        }
                     }
                 }
 
