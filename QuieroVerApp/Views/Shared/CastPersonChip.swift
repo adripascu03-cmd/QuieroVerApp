@@ -1,19 +1,33 @@
 import SwiftUI
 
-/// Foto circular de una persona, con iniciales como placeholder si no
-/// hay foto o la carga falla.
-struct PersonAvatar: View {
+/// Elemento del carrusel de reparto/dirección: foto, nombre y
+/// personaje (si aplica), con ancho fijo para no romper el layout.
+///
+/// `onTap` queda preparado para una fase futura (ficha de actor/
+/// director): si se proporciona, el chip se vuelve pulsable con el
+/// mismo feedback táctil que el resto de la app. Hoy no se pasa en
+/// ningún sitio, así que el comportamiento actual no cambia.
+struct CastPersonChip: View {
     let person: PersonDisplayItem
     var size: CGFloat = 64
+    var onTap: (() -> Void)? = nil
 
     var body: some View {
-        VStack(spacing: 4) {
-            avatarImage
-                .frame(width: size, height: size)
-                .clipShape(Circle())
+        if let onTap {
+            Button(action: onTap) { content }
+                .buttonStyle(PressableButtonStyle(scale: 0.95))
+        } else {
+            content
+        }
+    }
+
+    private var content: some View {
+        VStack(spacing: 6) {
+            PersonAvatarImage(person: person, size: size)
 
             Text(person.name)
                 .font(.caption2.weight(.medium))
+                .foregroundStyle(.primary)
                 .lineLimit(1)
                 .frame(width: size + 20)
 
@@ -25,35 +39,5 @@ struct PersonAvatar: View {
                     .frame(width: size + 20)
             }
         }
-    }
-
-    @ViewBuilder
-    private var avatarImage: some View {
-        if let url = ImageURLBuilder.profileURL(path: person.profilePath) {
-            AsyncImage(url: url) { phase in
-                if case .success(let image) = phase {
-                    image.resizable().aspectRatio(contentMode: .fill)
-                } else {
-                    initialsCircle
-                }
-            }
-        } else {
-            initialsCircle
-        }
-    }
-
-    private var initialsCircle: some View {
-        Circle()
-            .fill(Color(.systemGray4))
-            .overlay(
-                Text(initials)
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
-            )
-    }
-
-    private var initials: String {
-        let letters = person.name.split(separator: " ").prefix(2).compactMap { $0.first }
-        return String(letters).uppercased()
     }
 }

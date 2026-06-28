@@ -15,14 +15,16 @@ struct SavedDetailView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
-                MediaDetailHero(
+                MediaHeroHeader(
                     title: item.title,
                     mediaType: item.mediaType,
                     posterPath: item.posterPath,
-                    backdropPath: item.backdropPath
+                    backdropPath: item.backdropPath,
+                    director: item.directorsOrCreators.first.map(PersonDisplayItem.init),
+                    directorRoleLabel: item.creditSectionLabel
                 )
 
-                VStack(alignment: .leading, spacing: Spacing.lg) {
+                VStack(alignment: .leading, spacing: Spacing.xl) {
                     GlassInfoPanel {
                         VStack(spacing: Spacing.xs) {
                             Text(item.title)
@@ -70,7 +72,7 @@ struct SavedDetailView: View {
                     secondaryActions
                 }
                 .padding(.horizontal, Spacing.screenMargin)
-                .padding(.top, MediaDetailHero.posterOverlap + Spacing.sm)
+                .padding(.top, MediaHeroHeader.posterOverlap + Spacing.sm)
                 .padding(.bottom, item.status == .wantToWatch ? Spacing.xxl + 60 : Spacing.xl)
             }
         }
@@ -86,7 +88,7 @@ struct SavedDetailView: View {
             }
         }
         .sheet(isPresented: $showingCompletionSheet) {
-            CompletionSheetView(item: item)
+            RefinedCompletionSheet(item: item)
         }
         .confirmationDialog(
             "¿Eliminar de tu biblioteca?",

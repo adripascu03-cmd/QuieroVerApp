@@ -41,14 +41,16 @@ struct RemoteDetailView: View {
     @ViewBuilder
     private func loadedContent(_ details: MediaDetails) -> some View {
         VStack(spacing: 0) {
-            MediaDetailHero(
+            MediaHeroHeader(
                 title: details.title,
                 mediaType: details.mediaType,
                 posterPath: details.posterPath,
-                backdropPath: details.backdropPath
+                backdropPath: details.backdropPath,
+                director: details.creatorsOrDirectors.first.map(PersonDisplayItem.init),
+                directorRoleLabel: details.creditSectionLabel
             )
 
-            VStack(alignment: .leading, spacing: Spacing.lg) {
+            VStack(alignment: .leading, spacing: Spacing.xl) {
                 GlassInfoPanel {
                     VStack(spacing: Spacing.xs) {
                         Text(details.title)
@@ -93,7 +95,7 @@ struct RemoteDetailView: View {
                 .padding(.top, Spacing.sm)
             }
             .padding(.horizontal, Spacing.screenMargin)
-            .padding(.top, MediaDetailHero.posterOverlap + Spacing.sm)
+            .padding(.top, MediaHeroHeader.posterOverlap + Spacing.sm)
             .padding(.bottom, Spacing.xxl)
         }
     }

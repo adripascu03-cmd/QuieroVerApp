@@ -10,7 +10,7 @@ struct CastCarousel: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(alignment: .top, spacing: Spacing.md) {
                     ForEach(people) { person in
-                        PersonAvatar(person: person)
+                        CastPersonChip(person: person)
                     }
                 }
                 .padding(.horizontal, Spacing.screenMargin)
