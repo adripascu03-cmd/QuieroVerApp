@@ -34,6 +34,24 @@ TMDB_API_KEY = TU_API_KEY_AQUI
 por tu clave real. Este archivo está en `.gitignore`: nunca se sube a un
 repositorio. `Secrets.example.xcconfig` es la plantilla de referencia.
 
+### 2.1 Importante: crea también `Secrets.plist` (obligatorio para compilar)
+
+El proyecto ahora incluye un mecanismo de respaldo para leer la API key:
+si por lo que sea no llega vía `Info.plist`, la app intenta leer
+`QuieroVerApp/Resources/Secrets.plist` embebido en el bundle. **Ese
+archivo está en `.gitignore` y NO se sube**, pero el proyecto Xcode SÍ
+lo referencia como recurso del target — si no existe en tu copia local,
+el build fallará con "Build input file cannot be found".
+
+Antes de compilar:
+
+1. Copia `QuieroVerApp/Resources/Secrets.example.plist` como
+   `QuieroVerApp/Resources/Secrets.plist` (mismo directorio).
+2. Rellena tu clave real en la clave `TMDB_API_KEY` de ese archivo (puede
+   ser la misma clave que pusiste en `Secrets.xcconfig`, o dejarlo con el
+   placeholder si el mecanismo de `Info.plist` ya te funciona — pero el
+   archivo tiene que **existir** para que el build no falle).
+
 ## 3. Abrir y compilar
 
 1. Doble clic en `QuieroVerApp.xcodeproj`.
@@ -49,6 +67,21 @@ desarrollo (Team). No es necesario para el simulador.
 No he podido verificar la compilación real (sin macOS/Xcode aquí). Si al
 abrir el proyecto aparece algún error, pégamelo junto con el archivo y la
 línea exacta y lo corrijo en la siguiente iteración.
+
+## 5. Si la búsqueda sigue diciendo "Falta configurar la API key"
+
+`TMDbConfig` imprime un diagnóstico en la consola de Xcode cada vez que
+se pide la API key (solo en builds de Debug, nunca imprime la clave
+completa). Con la consola de Xcode abierta (⇧⌘C), busca líneas como:
+
+```
+[TMDbConfig] Info.plist["TMDBAPIKey"]: presente (32 caracteres)
+[TMDbConfig] Info.plist["TMDB_API_KEY"]: ausente
+[TMDbConfig] Secrets.plist["TMDB_API_KEY"]: presente (32 caracteres)
+```
+
+Si las tres líneas dicen "ausente" o "sigue siendo el placeholder",
+pégame exactamente esas tres líneas y seguimos depurando desde ahí.
 
 ## Decisiones y limitaciones conocidas del MVP1
 
