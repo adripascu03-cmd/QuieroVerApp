@@ -4,11 +4,17 @@ import SwiftData
 /// Ficha de una persona (actor, actriz, director, creador...). Recibe
 /// solo lo mínimo del punto de entrada (id, nombre y foto) para poder
 /// mostrar algo de inmediato mientras carga el resto desde TMDb.
+///
+/// Hero a pantalla completa con degradado hacia el contenido (inspirado
+/// en la composición de retrato + degradado de la referencia), nombre
+/// jerarquizado, rol, biografía y filmografía con distinción clara
+/// entre créditos de actuación y dirección.
 @MainActor
 struct PersonDetailView: View {
     let personId: Int
     let initialName: String
     let initialProfilePath: String?
+    var onJumpToRoot: (() -> Void)? = nil
 
     @Environment(\.modelContext) private var modelContext
     @State private var viewModel = PersonDetailViewModel()
@@ -23,99 +29,146 @@ struct PersonDetailView: View {
 
     var body: some View {
         ScrollView {
-            switch viewModel.state {
-            case .loading:
-                VStack(spacing: Spacing.lg) {
-                    header(nil)
+            VStack(spacing: 0) {
+                hero
+
+                switch viewModel.state {
+                case .loading:
                     ProgressView()
-                }
-                .padding(.top, Spacing.xl)
-            case .error(let message):
-                VStack(spacing: Spacing.lg) {
-                    header(nil)
+                        .padding(.top, Spacing.xl)
+                case .error(let message):
                     EmptyStateView(title: "No se ha podido cargar.", subtitle: message)
+                        .padding(.top, Spacing.xl)
+                case .loaded(let details):
+                    content(details)
                 }
-                .padding(.top, Spacing.xl)
-            case .loaded(let details):
-                content(details)
             }
         }
-        .navigationTitle(initialName)
+        .ignoresSafeArea(edges: .top)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+            if onJumpToRoot != nil {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        onJumpToRoot?()
+                    } label: {
+                        Image(systemName: "books.vertical.fill")
+                    }
+                    .accessibilityLabel("Volver a la galería")
+                }
+            }
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     toggleFavorite()
                 } label: {
                     Image(systemName: isFavorite ? "star.fill" : "star")
-                        .foregroundStyle(isFavorite ? Color.yellow : Color.secondary)
+                        .foregroundStyle(isFavorite ? Color.yellow : Color.white)
                 }
                 .accessibilityLabel(isFavorite ? "Quitar de favoritos" : "Añadir a favoritos")
             }
         }
         .navigationDestination(item: $selectedFilmographyItem) { result in
-            RemoteDetailView(result: result)
+            RemoteDetailView(result: result, onJumpToRoot: onJumpToRoot)
         }
         .task {
             await viewModel.load(personId: personId)
         }
     }
 
-    @ViewBuilder
-    private func header(_ details: PersonDetails?) -> some View {
-        VStack(spacing: Spacing.sm) {
-            PersonAvatarImage(
-                person: PersonDisplayItem(
-                    id: personId,
-                    name: details?.name ?? initialName,
-                    profilePath: details?.profilePath ?? initialProfilePath,
-                    character: nil
-                ),
-                size: 120
+    private var currentRoleLabel: String? {
+        if case .loaded(let details) = viewModel.state, !details.roleLabel.isEmpty {
+            return details.roleLabel
+        }
+        return nil
+    }
+
+    private var currentName: String {
+        if case .loaded(let details) = viewModel.state { return details.name }
+        return initialName
+    }
+
+    private var currentProfilePath: String? {
+        if case .loaded(let details) = viewModel.state { return details.profilePath }
+        return initialProfilePath
+    }
+
+    /// Foto a pantalla completa con degradado hacia el fondo: el nombre
+    /// y el rol quedan legibles sobre la imagen, sin necesitar una
+    /// tarjeta independiente.
+    private var hero: some View {
+        ZStack(alignment: .bottom) {
+            AsyncPosterImage(
+                url: ImageURLBuilder.profileURL(path: currentProfilePath, size: "h632"),
+                title: currentName,
+                mediaType: .movie
             )
-            .detailPosterShadow()
+            .aspectRatio(3 / 4, contentMode: .fill)
+            .frame(maxWidth: .infinity)
+            .clipped()
 
-            Text(details?.name ?? initialName)
-                .font(.title2.bold())
-                .multilineTextAlignment(.center)
+            LinearGradient(
+                colors: [.clear, .black.opacity(0.55), .black.opacity(0.92)],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .frame(height: 220)
+            .frame(maxHeight: .infinity, alignment: .bottom)
 
-            if let details {
-                if !details.roleLabel.isEmpty {
-                    Text(details.roleLabel)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+            VStack(alignment: .leading, spacing: 6) {
+                Text(currentName)
+                    .font(.largeTitle.bold())
+                    .foregroundStyle(.white)
+                    .lineLimit(2)
+
+                if let currentRoleLabel {
+                    Text(currentRoleLabel)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.white.opacity(0.9))
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 5)
+                        .background(.white.opacity(0.18), in: Capsule())
                 }
-                if let birthInfo = birthInfoLine(details) {
+
+                if case .loaded(let details) = viewModel.state, let birthInfo = birthInfoLine(details) {
                     Text(birthInfo)
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(.white.opacity(0.75))
                 }
             }
+            .padding(.horizontal, Spacing.screenMargin)
+            .padding(.bottom, Spacing.lg)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(.top, Spacing.lg)
+        .frame(height: 380)
     }
 
     @ViewBuilder
     private func content(_ details: PersonDetails) -> some View {
-        VStack(spacing: Spacing.xl) {
-            header(details)
-
+        VStack(alignment: .leading, spacing: Spacing.xl) {
             if let biography = details.biography, !biography.isEmpty {
                 SectionBlock(title: "Biografía") {
                     Text(biography)
                         .font(.body)
-                        .lineSpacing(4)
+                        .lineSpacing(5)
                         .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
 
-            if !details.filmography.isEmpty {
-                SectionBlock(title: details.filmographyTitle) {
-                    filmographyRow(details.filmography)
+            if !details.directingCredits.isEmpty {
+                SectionBlock(title: "Como director/a") {
+                    filmographyRow(details.directingCredits)
+                }
+            }
+
+            if !details.actingCredits.isEmpty {
+                SectionBlock(title: "Como actor / actriz") {
+                    filmographyRow(details.actingCredits)
                 }
             }
         }
         .padding(.horizontal, Spacing.screenMargin)
+        .padding(.top, Spacing.xl)
         .padding(.bottom, Spacing.xxl)
     }
 

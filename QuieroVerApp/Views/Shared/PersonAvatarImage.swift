@@ -2,8 +2,8 @@ import SwiftUI
 
 /// Foto circular atómica de una persona, con iniciales como placeholder
 /// si no hay foto o la carga falla. Pieza reusable compartida por
-/// `CastPersonChip` y `DirectorBadge` — y, en una fase futura, por la
-/// ficha propia de actor/director, sin duplicar la carga de imagen.
+/// `CastPersonChip`, `DirectorSection` y `DirectorsSection`, sin
+/// duplicar la carga de imagen.
 struct PersonAvatarImage: View {
     let person: PersonDisplayItem
     var size: CGFloat = 64
