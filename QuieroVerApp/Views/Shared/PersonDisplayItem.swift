@@ -23,4 +23,18 @@ extension PersonDisplayItem {
         self.profilePath = credit.profilePath
         self.character = credit.character
     }
+
+    init(_ result: PersonSearchResult) {
+        self.id = result.tmdbId
+        self.name = result.name
+        self.profilePath = result.profilePath
+        self.character = nil
+    }
+
+    init(_ favorite: FavoritePerson) {
+        self.id = favorite.tmdbId
+        self.name = favorite.name
+        self.profilePath = favorite.profilePath
+        self.character = nil
+    }
 }

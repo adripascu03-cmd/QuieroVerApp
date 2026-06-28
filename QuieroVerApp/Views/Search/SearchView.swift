@@ -3,6 +3,7 @@ import SwiftUI
 @MainActor
 struct SearchView: View {
     @State private var viewModel = SearchViewModel()
+    @State private var selectedPerson: PersonNavigationTarget?
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -15,12 +16,19 @@ struct SearchView: View {
                     // no solo este paso de la navegación interna.
                     RemoteDetailView(result: result, onAdded: { dismiss() })
                 }
+                .navigationDestination(item: $selectedPerson) { target in
+                    PersonDetailView(
+                        personId: target.personId,
+                        initialName: target.name,
+                        initialProfilePath: target.profilePath
+                    )
+                }
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
                         Button("Cerrar") { dismiss() }
                     }
                 }
-                .searchable(text: $viewModel.query, prompt: "Buscar película o serie...")
+                .searchable(text: $viewModel.query, prompt: "Buscar película, serie o persona...")
                 .onChange(of: viewModel.query) { _, _ in
                     viewModel.search()
                 }
@@ -31,14 +39,28 @@ struct SearchView: View {
     private var content: some View {
         switch viewModel.state {
         case .idle:
-            Color.clear
+            ScrollView {
+                FavoritePersonsSection { person in
+                    selectedPerson = person
+                }
+            }
         case .loading:
             ProgressView()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-        case .loaded(let results):
-            List(results) { result in
-                NavigationLink(value: result) {
-                    SearchResultRow(result: result)
+        case .loaded(let items):
+            List(items) { item in
+                switch item {
+                case .media(let result):
+                    NavigationLink(value: result) {
+                        SearchResultRow(result: result)
+                    }
+                case .person(let person):
+                    Button {
+                        selectedPerson = PersonNavigationTarget(person)
+                    } label: {
+                        PersonSearchResultRow(person: person)
+                    }
+                    .buttonStyle(.plain)
                 }
             }
             .listStyle(.plain)
@@ -59,4 +81,5 @@ struct SearchView: View {
 
 #Preview {
     SearchView()
+        .modelContainer(for: [MediaItem.self, FavoritePerson.self], inMemory: true)
 }
