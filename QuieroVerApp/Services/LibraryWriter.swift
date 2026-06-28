@@ -5,11 +5,10 @@ import SwiftData
 enum LibraryWriter {
     static func addToWantToWatch(details: MediaDetails, context: ModelContext) -> MediaItem {
         let targetKey = "\(details.mediaType.rawValue)-\(details.tmdbId)"
-        let descriptor = FetchDescriptor<MediaItem>(
-            predicate: #Predicate<MediaItem> { $0.uniqueKey == targetKey }
-        )
+        let descriptor = FetchDescriptor<MediaItem>()
 
-        if let existing = try? context.fetch(descriptor).first {
+        if let allItems = try? context.fetch(descriptor),
+           let existing = allItems.first(where: { $0.uniqueKey == targetKey }) {
             return existing
         }
 
