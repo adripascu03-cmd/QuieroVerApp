@@ -1,27 +1,32 @@
 import SwiftUI
 import SwiftData
 
-/// Ficha de una persona (actor, actriz, director, creador...). Recibe
-/// solo lo mínimo del punto de entrada (id, nombre y foto) para poder
-/// mostrar algo de inmediato mientras carga el resto desde TMDb.
+/// Ficha de una persona (actor, actriz, director, creador...). Recibe lo
+/// mínimo del punto de entrada (id, nombre, foto) para mostrar algo de
+/// inmediato mientras carga el resto desde TMDb.
 ///
-/// Hero a pantalla completa con degradado hacia el contenido (inspirado
-/// en la composición de retrato + degradado de la referencia), nombre
-/// jerarquizado, rol, biografía y filmografía con distinción clara
-/// entre créditos de actuación y dirección.
+/// Hero a sangre con la foto recortada a una altura FIJA (`.clipped()`
+/// sobre un contenedor de tamaño fijo, no `.aspectRatio(.fill)` suelto,
+/// que era lo que desbordaba y solapaba el texto sobre la cara). El
+/// degradado funde la foto hacia el fondo de la página: el nombre queda
+/// sobre la zona ya opaca, perfectamente legible, y la biografía y la
+/// filmografía van claramente DEBAJO, sin solaparse.
 @MainActor
 struct PersonDetailView: View {
     let personId: Int
     let initialName: String
     let initialProfilePath: String?
+    @Binding var path: NavigationPath
     var onJumpToRoot: (() -> Void)? = nil
 
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
     @State private var viewModel = PersonDetailViewModel()
-    @State private var selectedFilmographyItem: MediaSearchResult?
 
     @Query(sort: [SortDescriptor(\FavoritePerson.createdAt, order: .reverse)])
     private var favorites: [FavoritePerson]
+
+    private let heroHeight: CGFloat = 460
 
     private var isFavorite: Bool {
         favorites.contains { $0.tmdbId == personId }
@@ -31,56 +36,33 @@ struct PersonDetailView: View {
         ScrollView {
             VStack(spacing: 0) {
                 hero
-
-                switch viewModel.state {
-                case .loading:
-                    ProgressView()
-                        .padding(.top, Spacing.xl)
-                case .error(let message):
-                    EmptyStateView(title: "No se ha podido cargar.", subtitle: message)
-                        .padding(.top, Spacing.xl)
-                case .loaded(let details):
-                    content(details)
-                }
+                content
             }
         }
         .ignoresSafeArea(edges: .top)
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
         .toolbar {
-            if onJumpToRoot != nil {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button {
-                        onJumpToRoot?()
-                    } label: {
-                        Image(systemName: "books.vertical.fill")
-                    }
-                    .accessibilityLabel("Volver a la galería")
-                }
+            ToolbarItem(placement: .topBarLeading) {
+                CircleIconButton(systemName: "chevron.left") { dismiss() }
             }
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
+            ToolbarItemGroup(placement: .topBarTrailing) {
+                if onJumpToRoot != nil {
+                    CircleIconButton(systemName: "rectangle.stack.fill") { onJumpToRoot?() }
+                }
+                CircleIconButton(
+                    systemName: isFavorite ? "star.fill" : "star",
+                    tint: isFavorite ? .yellow : .primary
+                ) {
                     toggleFavorite()
-                } label: {
-                    Image(systemName: isFavorite ? "star.fill" : "star")
-                        .foregroundStyle(isFavorite ? Color.yellow : Color.white)
                 }
-                .accessibilityLabel(isFavorite ? "Quitar de favoritos" : "Añadir a favoritos")
             }
-        }
-        .navigationDestination(item: $selectedFilmographyItem) { result in
-            RemoteDetailView(result: result, onJumpToRoot: onJumpToRoot)
         }
         .task {
             await viewModel.load(personId: personId)
         }
     }
 
-    private var currentRoleLabel: String? {
-        if case .loaded(let details) = viewModel.state, !details.roleLabel.isEmpty {
-            return details.roleLabel
-        }
-        return nil
-    }
+    // MARK: Datos en vivo o iniciales
 
     private var currentName: String {
         if case .loaded(let details) = viewModel.state { return details.name }
@@ -92,84 +74,122 @@ struct PersonDetailView: View {
         return initialProfilePath
     }
 
-    /// Foto a pantalla completa con degradado hacia el fondo: el nombre
-    /// y el rol quedan legibles sobre la imagen, sin necesitar una
-    /// tarjeta independiente.
-    private var hero: some View {
-        ZStack(alignment: .bottom) {
-            AsyncPosterImage(
-                url: ImageURLBuilder.profileURL(path: currentProfilePath, size: "h632"),
-                title: currentName,
-                mediaType: .movie
-            )
-            .aspectRatio(3 / 4, contentMode: .fill)
-            .frame(maxWidth: .infinity)
-            .clipped()
+    private var currentRoleLabel: String? {
+        if case .loaded(let details) = viewModel.state, !details.roleLabel.isEmpty {
+            return details.roleLabel
+        }
+        return nil
+    }
 
+    // MARK: Hero
+
+    private var hero: some View {
+        ZStack(alignment: .bottomLeading) {
+            // Foto recortada a tamaño fijo: el overlay rellena el
+            // contenedor y `.clipped()` lo recorta — nunca desborda.
+            Color(.secondarySystemBackground)
+                .overlay {
+                    AsyncPosterImage(
+                        url: ImageURLBuilder.profileURL(path: currentProfilePath, size: "h632"),
+                        title: currentName,
+                        mediaType: .movie,
+                        contentMode: .fill
+                    )
+                }
+                .frame(height: heroHeight)
+                .frame(maxWidth: .infinity)
+                .clipped()
+
+            // Degradado: transparente arriba, funde al fondo de la página
+            // abajo, de modo que el nombre se apoya sobre zona opaca.
             LinearGradient(
-                colors: [.clear, .black.opacity(0.55), .black.opacity(0.92)],
+                stops: [
+                    .init(color: .clear, location: 0.0),
+                    .init(color: Color(.systemBackground).opacity(0.0), location: 0.42),
+                    .init(color: Color(.systemBackground).opacity(0.88), location: 0.74),
+                    .init(color: Color(.systemBackground), location: 1.0)
+                ],
                 startPoint: .top,
                 endPoint: .bottom
             )
-            .frame(height: 220)
-            .frame(maxHeight: .infinity, alignment: .bottom)
+            .allowsHitTesting(false)
 
-            VStack(alignment: .leading, spacing: 6) {
+            VStack(alignment: .leading, spacing: Spacing.xs) {
                 Text(currentName)
                     .font(.largeTitle.bold())
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.primary)
                     .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
 
                 if let currentRoleLabel {
                     Text(currentRoleLabel)
                         .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.white.opacity(0.9))
+                        .foregroundStyle(.secondary)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 5)
-                        .background(.white.opacity(0.18), in: Capsule())
+                        .background(Color(.secondarySystemBackground), in: Capsule())
                 }
 
                 if case .loaded(let details) = viewModel.state, let birthInfo = birthInfoLine(details) {
                     Text(birthInfo)
                         .font(.caption)
-                        .foregroundStyle(.white.opacity(0.75))
+                        .foregroundStyle(.secondary)
                 }
             }
             .padding(.horizontal, Spacing.screenMargin)
-            .padding(.bottom, Spacing.lg)
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.bottom, Spacing.sm)
         }
-        .frame(height: 380)
+        .frame(height: heroHeight)
+        .frame(maxWidth: .infinity)
     }
 
+    // MARK: Contenido bajo el hero
+
     @ViewBuilder
-    private func content(_ details: PersonDetails) -> some View {
-        VStack(alignment: .leading, spacing: Spacing.xl) {
-            if let biography = details.biography, !biography.isEmpty {
-                SectionBlock(title: "Biografía") {
-                    Text(biography)
-                        .font(.body)
-                        .lineSpacing(5)
-                        .fixedSize(horizontal: false, vertical: true)
+    private var content: some View {
+        switch viewModel.state {
+        case .loading:
+            ProgressView()
+                .padding(.top, Spacing.xl)
+                .frame(maxWidth: .infinity)
+        case .error(let message):
+            EmptyStateView(title: "No se ha podido cargar.", subtitle: message)
+                .padding(.top, Spacing.lg)
+        case .loaded(let details):
+            VStack(alignment: .leading, spacing: Spacing.xl) {
+                if let biography = details.biography, !biography.isEmpty {
+                    SectionBlock(title: "Biografía") {
+                        Text(biography)
+                            .font(.body)
+                            .lineSpacing(5)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
+
+                if !details.directingCredits.isEmpty {
+                    SectionBlock(title: "Como director/a") {
+                        filmographyRow(details.directingCredits)
+                    }
+                }
+
+                if !details.actingCredits.isEmpty {
+                    SectionBlock(title: "Como actor / actriz") {
+                        filmographyRow(details.actingCredits)
+                    }
+                }
+
+                if details.biography == nil && details.directingCredits.isEmpty && details.actingCredits.isEmpty {
+                    Text("No hay más información disponible de esta persona.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
-
-            if !details.directingCredits.isEmpty {
-                SectionBlock(title: "Como director/a") {
-                    filmographyRow(details.directingCredits)
-                }
-            }
-
-            if !details.actingCredits.isEmpty {
-                SectionBlock(title: "Como actor / actriz") {
-                    filmographyRow(details.actingCredits)
-                }
-            }
+            .padding(.horizontal, Spacing.screenMargin)
+            .padding(.top, Spacing.md)
+            .padding(.bottom, Spacing.xxl)
         }
-        .padding(.horizontal, Spacing.screenMargin)
-        .padding(.top, Spacing.xl)
-        .padding(.bottom, Spacing.xxl)
     }
 
     private func filmographyRow(_ items: [PersonCreditItem]) -> some View {
@@ -177,7 +197,7 @@ struct PersonDetailView: View {
             HStack(alignment: .top, spacing: Spacing.md) {
                 ForEach(items) { credit in
                     Button {
-                        selectedFilmographyItem = MediaSearchResult(
+                        path.append(MediaSearchResult(
                             id: credit.id,
                             tmdbId: credit.tmdbId,
                             mediaType: credit.mediaType,
@@ -188,7 +208,7 @@ struct PersonDetailView: View {
                             backdropPath: nil,
                             releaseDate: nil,
                             year: credit.year
-                        )
+                        ))
                     } label: {
                         VStack(alignment: .leading, spacing: 6) {
                             AsyncPosterImage(
@@ -196,8 +216,7 @@ struct PersonDetailView: View {
                                 title: credit.title,
                                 mediaType: credit.mediaType
                             )
-                            .aspectRatio(2 / 3, contentMode: .fill)
-                            .frame(width: 96, height: 144)
+                            .frame(width: 100, height: 150)
                             .clipShape(RoundedRectangle(cornerRadius: AppTheme.posterCornerRadius, style: .continuous))
                             .gridPosterShadow()
 
@@ -205,14 +224,13 @@ struct PersonDetailView: View {
                                 .font(.caption.weight(.semibold))
                                 .foregroundStyle(.primary)
                                 .lineLimit(1)
-                                .frame(width: 96, alignment: .leading)
+                                .frame(width: 100, alignment: .leading)
 
-                            if let role = credit.roleDescription, !role.isEmpty {
-                                Text(role)
+                            if let year = credit.year {
+                                Text(String(year))
                                     .font(.caption2)
                                     .foregroundStyle(.secondary)
-                                    .lineLimit(1)
-                                    .frame(width: 96, alignment: .leading)
+                                    .frame(width: 100, alignment: .leading)
                             }
                         }
                     }

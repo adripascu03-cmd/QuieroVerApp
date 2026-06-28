@@ -2,12 +2,13 @@ import SwiftUI
 import SwiftData
 
 /// Ficha de un item ya guardado, en "Quiero ver" o en "Vistas".
-/// Jerarquía: portada → título/género → metadatos esenciales →
-/// sinopsis → dirección/creación → reparto → registro personal/acciones.
+/// Jerarquía: portada → título → género → sinopsis → métricas →
+/// dirección → reparto → registro/acciones. La tab bar se oculta sola
+/// (la decide RootView según la profundidad de navegación), así que
+/// aquí no hay que gestionarla.
 struct SavedDetailView: View {
     @Bindable var item: MediaItem
-
-    @Binding var isTabBarHidden: Bool
+    @Binding var path: NavigationPath
     var onJumpToRoot: (() -> Void)? = nil
 
     @Environment(\.modelContext) private var modelContext
@@ -18,7 +19,6 @@ struct SavedDetailView: View {
     @State private var sheetInitialRating: Int?
     @State private var showingRatingSheet = false
     @State private var showingDeleteConfirmation = false
-    @State private var selectedPerson: PersonNavigationTarget?
 
     var body: some View {
         ScrollView {
@@ -26,21 +26,11 @@ struct SavedDetailView: View {
                 MediaHeroHeader(
                     title: item.title,
                     mediaType: item.mediaType,
-                    posterPath: item.posterPath,
-                    backdropPath: item.backdropPath
+                    posterPath: item.posterPath
                 )
 
                 VStack(alignment: .leading, spacing: Spacing.xl) {
-                    GlassInfoPanel {
-                        VStack(spacing: Spacing.xs) {
-                            Text(item.title)
-                                .font(.title2.bold())
-                                .multilineTextAlignment(.center)
-                                .fixedSize(horizontal: false, vertical: true)
-                            GenreChips(names: item.genres.map(\.name))
-                        }
-                        .frame(maxWidth: .infinity)
-                    }
+                    titleBlock
 
                     MetricChipsRow(chips: metricChips)
 
@@ -56,7 +46,7 @@ struct SavedDetailView: View {
                     if let director = item.directorsOrCreators.first.map(PersonDisplayItem.init) {
                         SectionBlock(title: item.creditSectionLabel) {
                             DirectorSection(person: director) {
-                                selectedPerson = PersonNavigationTarget(director)
+                                path.append(PersonNavigationTarget(director))
                             }
                         }
                     }
@@ -64,7 +54,7 @@ struct SavedDetailView: View {
                     if !item.cast.isEmpty {
                         SectionBlock(title: "Reparto") {
                             CastCarousel(people: item.cast.map(PersonDisplayItem.init)) { person in
-                                selectedPerson = PersonNavigationTarget(person)
+                                path.append(PersonNavigationTarget(person))
                             }
                         }
                     }
@@ -83,31 +73,20 @@ struct SavedDetailView: View {
                     secondaryActions
                 }
                 .padding(.horizontal, Spacing.screenMargin)
-                .padding(.top, MediaHeroHeader.posterOverlap + Spacing.sm)
-                .padding(.bottom, Spacing.xl)
+                .padding(.top, Spacing.sm)
+                .padding(.bottom, Spacing.xxl)
             }
         }
-        .ignoresSafeArea(edges: .top)
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
         .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                CircleIconButton(systemName: "chevron.left") { dismiss() }
+            }
             if onJumpToRoot != nil {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button {
-                        onJumpToRoot?()
-                    } label: {
-                        Image(systemName: "books.vertical.fill")
-                    }
-                    .accessibilityLabel("Volver a la galería")
+                ToolbarItem(placement: .topBarTrailing) {
+                    CircleIconButton(systemName: "rectangle.stack.fill") { onJumpToRoot?() }
                 }
             }
-        }
-        .navigationDestination(item: $selectedPerson) { target in
-            PersonDetailView(
-                personId: target.personId,
-                initialName: target.name,
-                initialProfilePath: target.profilePath,
-                onJumpToRoot: onJumpToRoot
-            )
         }
         .sheet(isPresented: $showingRatingSheet) {
             WatchRatingSheet(item: item, initialRating: sheetInitialRating)
@@ -123,18 +102,23 @@ struct SavedDetailView: View {
             }
             Button("Cancelar", role: .cancel) {}
         }
-        .onAppear {
-            withAnimation { isTabBarHidden = true }
+    }
+
+    private var titleBlock: some View {
+        VStack(spacing: Spacing.sm) {
+            Text(item.title)
+                .font(.title.bold())
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+            GenreChips(names: item.genres.map(\.name))
         }
-        .onDisappear {
-            withAnimation { isTabBarHidden = false }
-        }
+        .frame(maxWidth: .infinity)
     }
 
     @ViewBuilder
     private var watchActions: some View {
         if isRatingInline {
-            VStack(alignment: .leading, spacing: Spacing.sm) {
+            VStack(spacing: Spacing.sm) {
                 Text("¿Cuánto te ha gustado?")
                     .font(.subheadline.weight(.medium))
                     .foregroundStyle(.secondary)
@@ -143,7 +127,8 @@ struct SavedDetailView: View {
                     showingRatingSheet = true
                 }
             }
-            .padding(Spacing.md)
+            .frame(maxWidth: .infinity)
+            .padding(Spacing.lg)
             .background(.thinMaterial, in: RoundedRectangle(cornerRadius: AppTheme.cardCornerRadius, style: .continuous))
             .glassBorder(cornerRadius: AppTheme.cardCornerRadius)
             .transition(.opacity.combined(with: .move(edge: .top)))
@@ -217,6 +202,7 @@ struct SavedDetailView: View {
         item.personalImpact.map { Int(($0 / 2).rounded()) }
     }
 
+    /// Hasta 4 métricas esenciales que reparten el ancho de la fila.
     private var metricChips: [MetricChip.Item] {
         var chips: [MetricChip.Item] = [.init(label: "Tipo", value: item.mediaType.displayName)]
         if let year = item.year {
@@ -224,9 +210,8 @@ struct SavedDetailView: View {
         }
         if item.mediaType == .movie, let runtime = item.runtimeMinutes, runtime > 0 {
             chips.append(.init(label: "Duración", value: "\(runtime) min"))
-        }
-        if item.mediaType == .tv, let seasons = item.numberOfSeasons, seasons > 0 {
-            chips.append(.init(label: "Temporadas", value: seasons == 1 ? "1" : "\(seasons)"))
+        } else if item.mediaType == .tv, let seasons = item.numberOfSeasons, seasons > 0 {
+            chips.append(.init(label: "Temporadas", value: "\(seasons)"))
         }
         if let vote = item.voteAverage, vote > 0 {
             chips.append(.init(label: "Valoración", value: String(format: "★ %.1f", vote)))

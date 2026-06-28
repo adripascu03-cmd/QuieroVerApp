@@ -2,58 +2,47 @@ import SwiftUI
 import SwiftData
 
 /// Ficha previa de un resultado de búsqueda, antes de añadirlo a la
-/// biblioteca. Carga el detalle completo de TMDb (sinopsis, reparto,
-/// dirección/creación) y ofrece el botón "Añadir a Quiero ver". Al
-/// añadir, avisa al padre (`onAdded`) para que cierre toda la búsqueda
-/// de una vez, sin obligar a un "atrás" manual.
+/// biblioteca. Carga el detalle completo de TMDb y ofrece "Añadir a
+/// Quiero ver". Al añadir, avisa al padre (`onAdded`) para cerrar toda
+/// la búsqueda de una vez. Misma jerarquía visual que la ficha guardada.
 @MainActor
 struct RemoteDetailView: View {
     let result: MediaSearchResult
+    @Binding var path: NavigationPath
     var onAdded: (() -> Void)? = nil
     var onJumpToRoot: (() -> Void)? = nil
 
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
     @State private var viewModel = RemoteDetailViewModel()
     @State private var addedItem: MediaItem?
-    @State private var selectedPerson: PersonNavigationTarget?
 
     var body: some View {
         ScrollView {
             switch viewModel.state {
             case .loading:
                 ProgressView()
-                    .frame(maxWidth: .infinity, minHeight: 400)
+                    .frame(maxWidth: .infinity, minHeight: 420)
             case .error(let message):
                 EmptyStateView(
                     title: "No se ha podido cargar.",
                     subtitle: message
                 )
-                .frame(maxWidth: .infinity, minHeight: 400)
+                .frame(maxWidth: .infinity, minHeight: 420)
             case .loaded(let details):
                 loadedContent(details)
             }
         }
-        .ignoresSafeArea(edges: .top)
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
         .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                CircleIconButton(systemName: "chevron.left") { dismiss() }
+            }
             if onJumpToRoot != nil {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button {
-                        onJumpToRoot?()
-                    } label: {
-                        Image(systemName: "books.vertical.fill")
-                    }
-                    .accessibilityLabel("Volver a la galería")
+                ToolbarItem(placement: .topBarTrailing) {
+                    CircleIconButton(systemName: "rectangle.stack.fill") { onJumpToRoot?() }
                 }
             }
-        }
-        .navigationDestination(item: $selectedPerson) { target in
-            PersonDetailView(
-                personId: target.personId,
-                initialName: target.name,
-                initialProfilePath: target.profilePath,
-                onJumpToRoot: onJumpToRoot
-            )
         }
         .task {
             await viewModel.load(result)
@@ -66,21 +55,18 @@ struct RemoteDetailView: View {
             MediaHeroHeader(
                 title: details.title,
                 mediaType: details.mediaType,
-                posterPath: details.posterPath,
-                backdropPath: details.backdropPath
+                posterPath: details.posterPath
             )
 
             VStack(alignment: .leading, spacing: Spacing.xl) {
-                GlassInfoPanel {
-                    VStack(spacing: Spacing.xs) {
-                        Text(details.title)
-                            .font(.title2.bold())
-                            .multilineTextAlignment(.center)
-                            .fixedSize(horizontal: false, vertical: true)
-                        GenreChips(names: details.genres.map(\.name))
-                    }
-                    .frame(maxWidth: .infinity)
+                VStack(spacing: Spacing.sm) {
+                    Text(details.title)
+                        .font(.title.bold())
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                    GenreChips(names: details.genres.map(\.name))
                 }
+                .frame(maxWidth: .infinity)
 
                 MetricChipsRow(chips: metricChips(details))
 
@@ -96,7 +82,7 @@ struct RemoteDetailView: View {
                 if let director = details.creatorsOrDirectors.first.map(PersonDisplayItem.init) {
                     SectionBlock(title: details.creditSectionLabel) {
                         DirectorSection(person: director) {
-                            selectedPerson = PersonNavigationTarget(director)
+                            path.append(PersonNavigationTarget(director))
                         }
                     }
                 }
@@ -104,7 +90,7 @@ struct RemoteDetailView: View {
                 if !details.cast.isEmpty {
                     SectionBlock(title: "Reparto") {
                         CastCarousel(people: details.cast.map(PersonDisplayItem.init)) { person in
-                            selectedPerson = PersonNavigationTarget(person)
+                            path.append(PersonNavigationTarget(person))
                         }
                     }
                 }
@@ -119,7 +105,7 @@ struct RemoteDetailView: View {
                 .padding(.top, Spacing.sm)
             }
             .padding(.horizontal, Spacing.screenMargin)
-            .padding(.top, MediaHeroHeader.posterOverlap + Spacing.sm)
+            .padding(.top, Spacing.sm)
             .padding(.bottom, Spacing.xxl)
         }
     }
@@ -131,9 +117,8 @@ struct RemoteDetailView: View {
         }
         if details.mediaType == .movie, let runtime = details.runtimeMinutes, runtime > 0 {
             chips.append(.init(label: "Duración", value: "\(runtime) min"))
-        }
-        if details.mediaType == .tv, let seasons = details.numberOfSeasons, seasons > 0 {
-            chips.append(.init(label: "Temporadas", value: seasons == 1 ? "1" : "\(seasons)"))
+        } else if details.mediaType == .tv, let seasons = details.numberOfSeasons, seasons > 0 {
+            chips.append(.init(label: "Temporadas", value: "\(seasons)"))
         }
         if let vote = details.voteAverage, vote > 0 {
             chips.append(.init(label: "Valoración", value: String(format: "★ %.1f", vote)))
