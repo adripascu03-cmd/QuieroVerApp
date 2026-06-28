@@ -14,7 +14,6 @@
 		2B2B2B2B2B2B2B2B2B2B007B /* PersonDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B007A /* PersonDetailView.swift */; };
 		2B2B2B2B2B2B2B2B2B2B007D /* PersonSearchResultRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B007C /* PersonSearchResultRow.swift */; };
 		2B2B2B2B2B2B2B2B2B2B007F /* FavoritePersonsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B007E /* FavoritePersonsSection.swift */; };
-		2B2B2B2B2B2B2B2B2B2B006D /* CompactAddCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B006C /* CompactAddCard.swift */; };
 		2B2B2B2B2B2B2B2B2B2B006F /* PersonAvatarImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B006E /* PersonAvatarImage.swift */; };
 		2B2B2B2B2B2B2B2B2B2B0071 /* DirectorSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0070 /* DirectorSection.swift */; };
 		2B2B2B2B2B2B2B2B2B2B0073 /* LiquidTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0072 /* LiquidTabBar.swift */; };
@@ -60,7 +59,9 @@
 		2B2B2B2B2B2B2B2B2B2B0055 /* PosterPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0054 /* PosterPlaceholder.swift */; };
 		2B2B2B2B2B2B2B2B2B2B0058 /* WatchRatingSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0057 /* WatchRatingSheet.swift */; };
 		2B2B2B2B2B2B2B2B2B2B005D /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B005C /* RootView.swift */; };
-		2B2B2B2B2B2B2B2B2B2B0081 /* ImmersivePosterStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0080 /* ImmersivePosterStack.swift */; };
+		2B2B2B2B2B2B2B2B2B2B0089 /* PerspectivePosterDeck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0088 /* PerspectivePosterDeck.swift */; };
+		2B2B2B2B2B2B2B2B2B2B008B /* FloatingAddButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B008A /* FloatingAddButton.swift */; };
+		2B2B2B2B2B2B2B2B2B2B008D /* CircleIconButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B008C /* CircleIconButton.swift */; };
 		2B2B2B2B2B2B2B2B2B2B0083 /* DirectorsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0082 /* DirectorsSection.swift */; };
 		2B2B2B2B2B2B2B2B2B2B0085 /* MetricChip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0084 /* MetricChip.swift */; };
 		2B2B2B2B2B2B2B2B2B2B0087 /* StarRatingPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0086 /* StarRatingPicker.swift */; };
@@ -76,7 +77,6 @@
 		2B2B2B2B2B2B2B2B2B2B007A /* PersonDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonDetailView.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B007C /* PersonSearchResultRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonSearchResultRow.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B007E /* FavoritePersonsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritePersonsSection.swift; sourceTree = "<group>"; };
-		2B2B2B2B2B2B2B2B2B2B006C /* CompactAddCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompactAddCard.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B006E /* PersonAvatarImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonAvatarImage.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B0070 /* DirectorSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectorSection.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B0072 /* LiquidTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidTabBar.swift; sourceTree = "<group>"; };
@@ -124,7 +124,9 @@
 		2B2B2B2B2B2B2B2B2B2B0054 /* PosterPlaceholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PosterPlaceholder.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B0057 /* WatchRatingSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchRatingSheet.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B005C /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
-		2B2B2B2B2B2B2B2B2B2B0080 /* ImmersivePosterStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImmersivePosterStack.swift; sourceTree = "<group>"; };
+		2B2B2B2B2B2B2B2B2B2B0088 /* PerspectivePosterDeck.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerspectivePosterDeck.swift; sourceTree = "<group>"; };
+		2B2B2B2B2B2B2B2B2B2B008A /* FloatingAddButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingAddButton.swift; sourceTree = "<group>"; };
+		2B2B2B2B2B2B2B2B2B2B008C /* CircleIconButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleIconButton.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B0082 /* DirectorsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectorsSection.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B0084 /* MetricChip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricChip.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B0086 /* StarRatingPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarRatingPicker.swift; sourceTree = "<group>"; };
@@ -242,7 +244,7 @@
 				2B2B2B2B2B2B2B2B2B2B0036 /* RefinedFilterPillBar.swift */,
 				2B2B2B2B2B2B2B2B2B2B003A /* EditorialPosterCard.swift */,
 				2B2B2B2B2B2B2B2B2B2B0082 /* DirectorsSection.swift */,
-				2B2B2B2B2B2B2B2B2B2B0080 /* ImmersivePosterStack.swift */,
+				2B2B2B2B2B2B2B2B2B2B0088 /* PerspectivePosterDeck.swift */,
 				2B2B2B2B2B2B2B2B2B2B003C /* QuieroVerView.swift */,
 				2B2B2B2B2B2B2B2B2B2B003E /* VistasView.swift */,
 			);
@@ -266,9 +268,10 @@
 				2B2B2B2B2B2B2B2B2B2B0046 /* AsyncPosterImage.swift */,
 				2B2B2B2B2B2B2B2B2B2B0048 /* CastCarousel.swift */,
 				2B2B2B2B2B2B2B2B2B2B0050 /* CastPersonChip.swift */,
-				2B2B2B2B2B2B2B2B2B2B006C /* CompactAddCard.swift */,
+				2B2B2B2B2B2B2B2B2B2B008C /* CircleIconButton.swift */,
 				2B2B2B2B2B2B2B2B2B2B0070 /* DirectorSection.swift */,
 				2B2B2B2B2B2B2B2B2B2B004A /* EmptyStateView.swift */,
+				2B2B2B2B2B2B2B2B2B2B008A /* FloatingAddButton.swift */,
 				2B2B2B2B2B2B2B2B2B2B004C /* GenreChips.swift */,
 				2B2B2B2B2B2B2B2B2B2B0066 /* GlassInfoPanel.swift */,
 				2B2B2B2B2B2B2B2B2B2B0072 /* LiquidTabBar.swift */,
@@ -397,7 +400,6 @@
 				2B2B2B2B2B2B2B2B2B2B007B /* PersonDetailView.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B007D /* PersonSearchResultRow.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B007F /* FavoritePersonsSection.swift in Sources */,
-				2B2B2B2B2B2B2B2B2B2B006D /* CompactAddCard.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B006F /* PersonAvatarImage.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B0071 /* DirectorSection.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B0073 /* LiquidTabBar.swift in Sources */,
@@ -441,10 +443,12 @@
 				2B2B2B2B2B2B2B2B2B2B0055 /* PosterPlaceholder.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B0058 /* WatchRatingSheet.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B005D /* RootView.swift in Sources */,
-				2B2B2B2B2B2B2B2B2B2B0081 /* ImmersivePosterStack.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B0083 /* DirectorsSection.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B0085 /* MetricChip.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B0087 /* StarRatingPicker.swift in Sources */,
+				2B2B2B2B2B2B2B2B2B2B0089 /* PerspectivePosterDeck.swift in Sources */,
+				2B2B2B2B2B2B2B2B2B2B008B /* FloatingAddButton.swift in Sources */,
+				2B2B2B2B2B2B2B2B2B2B008D /* CircleIconButton.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,47 +1,61 @@
 import SwiftUI
 
-/// Pager custom entre "Quiero ver" y "Vistas". Sustituye
-/// `TabView(.page)`: ese estilo tiene un problema conocido de
-/// "tragarse" toques sobre botones hijos por cómo instala su gesture
-/// recognizer de paginado. Un `DragGesture` propio con distancia mínima
-/// no se activa con un simple tap, así que nunca compite con botones.
+/// Raíz de la app: pager horizontal entre "Quiero ver" y "Vistas" con
+/// una tab bar flotante que SOLO aparece en las pantallas raíz.
+///
+/// La visibilidad de la tab bar no la decide cada pantalla de detalle a
+/// mano (eso provocaba que, p. ej., abrir una ficha de persona desde la
+/// categoría Directores dejara la barra visible). Aquí se DERIVA del
+/// estado de navegación: los `NavigationPath` de cada pestaña viven en
+/// este nivel, y la barra se muestra solo cuando el path de la pestaña
+/// activa está vacío (= estás en la raíz). Cualquier push la oculta,
+/// cualquier vuelta a raíz la recupera, sin tocar nada en las fichas.
 struct RootView: View {
     @State private var selectedTab: LibraryTab = .quieroVer
-    @State private var isTabBarHidden = false
+    @State private var quieroVerPath = NavigationPath()
+    @State private var vistasPath = NavigationPath()
     @State private var dragOffset: CGFloat = 0
+
+    private var isAtRoot: Bool {
+        selectedTab == .quieroVer ? quieroVerPath.isEmpty : vistasPath.isEmpty
+    }
 
     var body: some View {
         GeometryReader { proxy in
             let pageWidth = proxy.size.width
 
             HStack(spacing: 0) {
-                QuieroVerView(isTabBarHidden: $isTabBarHidden)
+                QuieroVerView(path: $quieroVerPath)
                     .frame(width: pageWidth)
-                VistasView(isTabBarHidden: $isTabBarHidden)
+                VistasView(path: $vistasPath)
                     .frame(width: pageWidth)
             }
             .offset(x: -CGFloat(selectedTab.rawValue) * pageWidth + dragOffset)
             .frame(width: pageWidth, alignment: .leading)
             .clipped()
-            // `including:` cambia solo el valor de la máscara, nunca el
-            // tipo de la vista — a diferencia de un if/else estructural,
-            // esto no destruye ni recrea QuieroVerView/VistasView (con
-            // su NavigationPath interno) al ocultar la tab bar.
+            // En detalle (no-raíz) el pager se desactiva vía GestureMask
+            // (no un if/else estructural, que recrearía las pestañas y
+            // perdería su NavigationPath) para no competir con el gesto
+            // nativo de "atrás".
             .gesture(
                 dragGesture(pageWidth: pageWidth),
-                including: isTabBarHidden ? .subviews : .all
+                including: isAtRoot ? .all : .subviews
             )
         }
         .safeAreaInset(edge: .bottom) {
-            if !isTabBarHidden {
+            if isAtRoot {
                 LiquidTabBar(selection: $selectedTab)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
+        .animation(.easeInOut(duration: 0.28), value: isAtRoot)
     }
 
     private func dragGesture(pageWidth: CGFloat) -> some Gesture {
         DragGesture(minimumDistance: 24)
             .onChanged { value in
+                // Solo gestos predominantemente horizontales mueven el pager.
+                guard abs(value.translation.width) > abs(value.translation.height) else { return }
                 dragOffset = value.translation.width
             }
             .onEnded { value in

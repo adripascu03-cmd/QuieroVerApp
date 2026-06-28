@@ -1,69 +1,36 @@
 import SwiftUI
 
-/// Cabecera editorial de la ficha de detalle: backdrop difuminado que
-/// funde con el fondo del sistema, y un poster grande y protagonista,
-/// centrado, que se apoya sobre el borde inferior con sombra suave.
-/// Título, metadatos y dirección/creación NO van superpuestos a la
-/// imagen (legibilidad); viven juntos en el panel de abajo, donde
-/// componen mejor como un solo grupo. Compartida entre la ficha previa
-/// y la ficha guardada.
+/// Cabecera de la ficha: poster protagonista, centrado y flotante sobre
+/// el fondo claro con una sombra suave — composición limpia y editorial
+/// (estilo Listy), sin el backdrop difuminado anterior que ensuciaba la
+/// pantalla. Compartida entre la ficha previa y la ficha guardada.
 struct MediaHeroHeader: View {
     let title: String
     let mediaType: MediaType
     let posterPath: String?
-    let backdropPath: String?
+    /// Se mantiene por compatibilidad de las llamadas; ya no se pinta un
+    /// backdrop (decisión: fondo limpio).
+    var backdropPath: String? = nil
 
-    private let heroHeight: CGFloat = 240
-    private let posterWidth: CGFloat = 144
-    private let posterHeight: CGFloat = 216
-    /// Cuánto sobresale el poster por debajo del backdrop, solapando con
-    /// el contenido siguiente. Contenido a propósito: el padre debe
-    /// reservar este mismo espacio como padding superior.
-    static let posterOverlap: CGFloat = 44
+    private let posterWidth: CGFloat = 160
+    private let posterHeight: CGFloat = 240
 
     var body: some View {
-        ZStack(alignment: .bottom) {
-            backdrop
-
-            AsyncPosterImage(
-                url: ImageURLBuilder.posterURL(path: posterPath),
-                title: title,
-                mediaType: mediaType,
-                contentMode: .fit
-            )
-            .frame(width: posterWidth, height: posterHeight)
-            .background(Color(.systemGray5))
-            .clipShape(RoundedRectangle(cornerRadius: AppTheme.posterCornerRadius, style: .continuous))
-            .detailPosterShadow()
-            .offset(y: Self.posterOverlap)
-        }
-        .frame(height: heroHeight)
-    }
-
-    @ViewBuilder
-    private var backdrop: some View {
-        let backdropURL = ImageURLBuilder.backdropURL(path: backdropPath)
-        let fallbackURL = ImageURLBuilder.posterURL(path: posterPath, size: "w780")
-        let url = backdropURL ?? fallbackURL
-
-        ZStack {
-            if let url {
-                AsyncImage(url: url) { phase in
-                    if case .success(let image) = phase {
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .blur(radius: backdropURL == nil ? 28 : 0)
-                    } else {
-                        Color(.systemGray5)
-                    }
-                }
-            } else {
-                Color(.systemGray5)
-            }
-        }
-        .frame(height: heroHeight)
-        .clipped()
-        .overlay(AppTheme.backdropFade(into: Color(.systemBackground)))
+        AsyncPosterImage(
+            url: ImageURLBuilder.posterURL(path: posterPath),
+            title: title,
+            mediaType: mediaType,
+            contentMode: .fill
+        )
+        .frame(width: posterWidth, height: posterHeight)
+        .clipShape(RoundedRectangle(cornerRadius: AppTheme.posterCornerRadius, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.posterCornerRadius, style: .continuous)
+                .strokeBorder(.white.opacity(0.12), lineWidth: 1)
+        )
+        .detailPosterShadow()
+        .frame(maxWidth: .infinity)
+        .padding(.top, Spacing.md)
+        .padding(.bottom, Spacing.xs)
     }
 }

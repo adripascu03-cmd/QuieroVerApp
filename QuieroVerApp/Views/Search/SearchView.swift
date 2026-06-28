@@ -3,24 +3,25 @@ import SwiftUI
 @MainActor
 struct SearchView: View {
     @State private var viewModel = SearchViewModel()
-    @State private var selectedPerson: PersonNavigationTarget?
+    @State private var path = NavigationPath()
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             content
                 .navigationTitle("Buscar")
                 .navigationBarTitleDisplayMode(.inline)
                 .navigationDestination(for: MediaSearchResult.self) { result in
                     // onAdded cierra todo el sheet de búsqueda de una vez,
                     // no solo este paso de la navegación interna.
-                    RemoteDetailView(result: result, onAdded: { dismiss() })
+                    RemoteDetailView(result: result, path: $path, onAdded: { dismiss() })
                 }
-                .navigationDestination(item: $selectedPerson) { target in
+                .navigationDestination(for: PersonNavigationTarget.self) { target in
                     PersonDetailView(
                         personId: target.personId,
                         initialName: target.name,
-                        initialProfilePath: target.profilePath
+                        initialProfilePath: target.profilePath,
+                        path: $path
                     )
                 }
                 .toolbar {
@@ -41,7 +42,7 @@ struct SearchView: View {
         case .idle:
             ScrollView {
                 FavoritePersonsSection { person in
-                    selectedPerson = person
+                    path.append(person)
                 }
             }
         case .loading:
@@ -56,7 +57,7 @@ struct SearchView: View {
                     }
                 case .person(let person):
                     Button {
-                        selectedPerson = PersonNavigationTarget(person)
+                        path.append(PersonNavigationTarget(person))
                     } label: {
                         PersonSearchResultRow(person: person)
                     }

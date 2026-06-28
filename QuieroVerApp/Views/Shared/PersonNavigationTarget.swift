@@ -2,9 +2,10 @@ import Foundation
 
 /// Valor mínimo para navegar a la ficha de una persona, sin importar
 /// de dónde viene el toque (resultado de búsqueda, favoritos, reparto
-/// o dirección de una película/serie). Se usa con
-/// `.navigationDestination(item:)`, local a cada vista — no depende de
-/// qué NavigationStack ancestro esté activo.
+/// o dirección de una película/serie). Se empuja en el `NavigationPath`
+/// compartido de la pestaña, con un único `.navigationDestination(for:)`
+/// registrado en la raíz — así toda la profundidad de navegación se
+/// refleja en el path (de lo que depende ocultar la tab bar).
 struct PersonNavigationTarget: Identifiable, Hashable {
     let personId: Int
     let name: String

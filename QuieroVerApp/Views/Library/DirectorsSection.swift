@@ -1,10 +1,10 @@
 import SwiftUI
 
 /// Agrupación de la biblioteca por director/creador: una fila por
-/// persona, con su foto+nombre a la izquierda y sus películas/series
-/// guardadas en esa librería en un carrusel horizontal a la derecha.
-/// Películas sin director identificable simplemente no aparecen aquí
-/// — no rompen nada.
+/// persona — bloque de director (avatar + nombre + nº de títulos) a la
+/// izquierda y sus películas/series guardadas en un carrusel a la
+/// derecha. Lo que no tiene dirección identificable simplemente no
+/// aparece — no rompe nada.
 struct DirectorsSection: View {
     let items: [MediaItem]
     var showImpact: Bool = false
@@ -43,10 +43,11 @@ struct DirectorsSection: View {
             Text("Ninguna de tus películas guardadas tiene dirección identificable todavía.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, Spacing.screenMargin)
                 .padding(.top, Spacing.lg)
         } else {
-            VStack(alignment: .leading, spacing: Spacing.lg) {
+            VStack(alignment: .leading, spacing: Spacing.xl) {
                 ForEach(groups) { group in
                     DirectorRow(
                         director: group.director,
@@ -56,7 +57,7 @@ struct DirectorsSection: View {
                     )
                 }
             }
-            .padding(.top, Spacing.sm)
+            .padding(.top, Spacing.md)
             .padding(.bottom, Spacing.xl)
         }
     }
@@ -68,8 +69,11 @@ private struct DirectorRow: View {
     var showImpact: Bool
     var onSelectDirector: ((PersonDisplayItem) -> Void)?
 
+    private let posterWidth: CGFloat = 92
+    private let posterHeight: CGFloat = 138
+
     var body: some View {
-        HStack(alignment: .top, spacing: Spacing.md) {
+        HStack(alignment: .center, spacing: Spacing.md) {
             directorButton
 
             ScrollView(.horizontal, showsIndicators: false) {
@@ -101,15 +105,27 @@ private struct DirectorRow: View {
     }
 
     private var directorContent: some View {
-        VStack(spacing: 6) {
+        VStack(spacing: Spacing.xs) {
             PersonAvatarImage(person: director, size: 64)
-            Text(director.name)
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.primary)
-                .multilineTextAlignment(.center)
-                .lineLimit(2)
+
+            VStack(spacing: 1) {
+                Text(director.name)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.primary)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.85)
+
+                Text(countLabel)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
         }
-        .frame(width: 76)
+        .frame(width: 96)
+    }
+
+    private var countLabel: String {
+        items.count == 1 ? "1 título" : "\(items.count) títulos"
     }
 
     private func posterThumbnail(_ item: MediaItem) -> some View {
@@ -119,9 +135,12 @@ private struct DirectorRow: View {
                 title: item.title,
                 mediaType: item.mediaType
             )
-            .aspectRatio(2 / 3, contentMode: .fill)
-            .frame(width: 84, height: 126)
+            .frame(width: posterWidth, height: posterHeight)
             .clipShape(RoundedRectangle(cornerRadius: AppTheme.posterCornerRadius, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: AppTheme.posterCornerRadius, style: .continuous)
+                    .strokeBorder(.white.opacity(0.1), lineWidth: 0.5)
+            )
             .gridPosterShadow()
 
             if showImpact, let impact = item.personalImpact {

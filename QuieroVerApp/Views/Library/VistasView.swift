@@ -2,7 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct VistasView: View {
-    @Binding var isTabBarHidden: Bool
+    @Binding var path: NavigationPath
 
     @Query(
         filter: #Predicate<MediaItem> { $0.statusRaw == "watched" },
@@ -10,9 +10,7 @@ struct VistasView: View {
     )
     private var allItems: [MediaItem]
 
-    @State private var path = NavigationPath()
     @State private var filter: LibraryFilter = .recientes
-    @State private var selectedPerson: PersonNavigationTarget?
 
     private var items: [MediaItem] {
         if filter == .impacto {
@@ -24,78 +22,69 @@ struct VistasView: View {
 
     var body: some View {
         NavigationStack(path: $path) {
-            ScrollView {
-                VStack(alignment: .leading, spacing: Spacing.md) {
-                    header
+            VStack(spacing: Spacing.md) {
+                LibraryHeader(title: "Vistas", count: allItems.count, noun: "archivada")
 
-                    if allItems.isEmpty {
-                        EmptyStateView(
-                            title: "Aún no has archivado ninguna.",
-                            subtitle: "Cuando marques algo como visto, aparecerá aquí con tu nota."
-                        )
-                        .padding(.top, Spacing.lg)
-                    } else {
-                        RefinedFilterPillBar(
-                            options: [.recientes, .impacto, .peliculas, .series, .directores],
-                            selection: $filter
-                        )
-
-                        Group {
-                            if filter == .directores {
-                                DirectorsSection(items: allItems, showImpact: true) { person in
-                                    selectedPerson = PersonNavigationTarget(person)
-                                }
-                            } else if items.isEmpty {
-                                Text("No hay nada con este filtro.")
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
-                                    .padding(.horizontal, Spacing.screenMargin)
-                                    .padding(.top, Spacing.lg)
-                            } else {
-                                ImmersivePosterStack(items: items, showImpact: true)
-                            }
-                        }
-                        .animation(.easeInOut(duration: 0.3), value: filter)
-                    }
+                if allItems.isEmpty {
+                    Spacer()
+                    EmptyStateView(
+                        title: "Aún no has archivado ninguna.",
+                        subtitle: "Cuando marques algo como visto, aparecerá aquí con tu nota."
+                    )
+                    Spacer()
+                } else {
+                    RefinedFilterPillBar(
+                        options: [.recientes, .impacto, .peliculas, .series, .directores],
+                        selection: $filter
+                    )
+                    content
                 }
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .navigationDestination(for: MediaItem.self) { item in
-                SavedDetailView(
-                    item: item,
-                    isTabBarHidden: $isTabBarHidden,
-                    onJumpToRoot: { path = NavigationPath() }
-                )
+                SavedDetailView(item: item, path: $path, onJumpToRoot: { path = NavigationPath() })
             }
-            .navigationDestination(item: $selectedPerson) { target in
+            .navigationDestination(for: PersonNavigationTarget.self) { target in
                 PersonDetailView(
                     personId: target.personId,
                     initialName: target.name,
                     initialProfilePath: target.profilePath,
+                    path: $path,
                     onJumpToRoot: { path = NavigationPath() }
                 )
             }
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationDestination(for: MediaSearchResult.self) { result in
+                RemoteDetailView(result: result, path: $path, onJumpToRoot: { path = NavigationPath() })
+            }
+            .toolbar(.hidden, for: .navigationBar)
         }
     }
 
-    private var header: some View {
-        VStack(alignment: .leading, spacing: Spacing.xxs) {
-            Text("Vistas")
-                .font(.largeTitle.bold())
-            Text(countLabel)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+    @ViewBuilder
+    private var content: some View {
+        Group {
+            if filter == .directores {
+                ScrollView {
+                    DirectorsSection(items: allItems, showImpact: true) { person in
+                        path.append(PersonNavigationTarget(person))
+                    }
+                }
+            } else if items.isEmpty {
+                EmptyFilterNotice()
+            } else {
+                PerspectivePosterDeck(items: items, showImpact: true) { item in
+                    path.append(item)
+                }
+                .id(filter)
+                .transition(.opacity)
+            }
         }
-        .padding(.horizontal, Spacing.screenMargin)
-        .padding(.top, Spacing.sm)
-    }
-
-    private var countLabel: String {
-        allItems.count == 1 ? "1 archivada" : "\(allItems.count) archivadas"
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .animation(.easeInOut(duration: 0.3), value: filter)
     }
 }
 
 #Preview {
-    VistasView(isTabBarHidden: .constant(false))
+    VistasView(path: .constant(NavigationPath()))
         .modelContainer(for: [MediaItem.self, FavoritePerson.self], inMemory: true)
 }

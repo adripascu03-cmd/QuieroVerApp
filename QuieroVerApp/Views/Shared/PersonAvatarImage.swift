@@ -31,12 +31,25 @@ struct PersonAvatarImage: View {
 
     private var initialsCircle: some View {
         Circle()
-            .fill(Color(.systemGray4))
-            .overlay(
-                Text(initials)
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
+            .fill(
+                LinearGradient(
+                    colors: [Color(.systemGray4), Color(.systemGray5)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
             )
+            .overlay(Circle().strokeBorder(.white.opacity(0.25), lineWidth: 1))
+            .overlay {
+                if initials.isEmpty {
+                    Image(systemName: "person.fill")
+                        .foregroundStyle(.secondary)
+                        .font(.system(size: size * 0.42))
+                } else {
+                    Text(initials)
+                        .font(.system(size: size * 0.34, weight: .semibold))
+                        .foregroundStyle(.secondary)
+                }
+            }
     }
 
     private var initials: String {

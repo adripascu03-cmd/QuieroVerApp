@@ -1,7 +1,8 @@
 import SwiftUI
 
 /// Chip individual de metadato esencial (tipo, año, duración,
-/// valoración...), inspirado en la fila de métricas de Listy.
+/// valoración...), inspirado en la fila de métricas de Listy. Compacto
+/// y de altura uniforme.
 struct MetricChip: View {
     struct Item: Identifiable {
         let label: String
@@ -13,40 +14,39 @@ struct MetricChip: View {
     let value: String
 
     var body: some View {
-        VStack(spacing: 2) {
-            Text(label)
+        VStack(spacing: 3) {
+            Text(label.uppercased())
                 .font(.caption2)
                 .foregroundStyle(.secondary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
             Text(value)
-                .font(.caption.weight(.semibold))
+                .font(.subheadline.weight(.semibold))
                 .foregroundStyle(.primary)
                 .lineLimit(1)
+                .minimumScaleFactor(0.75)
         }
-        .frame(minWidth: 68)
-        .padding(.vertical, 8)
-        .padding(.horizontal, 12)
-        .background(Color(.systemGray6), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 10)
+        .padding(.horizontal, 6)
+        .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 }
 
-/// Fila horizontal de `MetricChip`. No asume padding ambiental propio
-/// salvo el "bleed" estándar, pensado para vivir dentro del contenido
-/// con margen de pantalla ya aplicado por el padre (igual que
-/// `CastCarousel`).
+/// Fila de métricas de ancho fijo: reparte el ancho disponible entre
+/// los chips (hasta 4) en lugar de hacer scroll horizontal. Así nunca
+/// se corta el último chip contra el borde — el bug de "márgenes rotos"
+/// de la versión anterior. El padre aplica el margen de pantalla.
 struct MetricChipsRow: View {
     let chips: [MetricChip.Item]
 
     var body: some View {
         if !chips.isEmpty {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: Spacing.xs) {
-                    ForEach(chips) { chip in
-                        MetricChip(label: chip.label, value: chip.value)
-                    }
+            HStack(spacing: Spacing.xs) {
+                ForEach(chips) { chip in
+                    MetricChip(label: chip.label, value: chip.value)
                 }
-                .padding(.horizontal, Spacing.screenMargin)
             }
-            .padding(.horizontal, -Spacing.screenMargin)
         }
     }
 }
