@@ -8,7 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		2B2B2B2B2B2B2B2B2B2B0002 /* QuieroVerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0001 /* QuieroVerApp.swift */; };
-		2B2B2B2B2B2B2B2B2B2B0065 /* AddMediaCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0064 /* AddMediaCard.swift */; };
+		2B2B2B2B2B2B2B2B2B2B006D /* CompactAddCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B006C /* CompactAddCard.swift */; };
+		2B2B2B2B2B2B2B2B2B2B006F /* PersonAvatarImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B006E /* PersonAvatarImage.swift */; };
+		2B2B2B2B2B2B2B2B2B2B0071 /* DirectorBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0070 /* DirectorBadge.swift */; };
+		2B2B2B2B2B2B2B2B2B2B0073 /* LiquidTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0072 /* LiquidTabBar.swift */; };
 		2B2B2B2B2B2B2B2B2B2B0067 /* GlassInfoPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0066 /* GlassInfoPanel.swift */; };
 		2B2B2B2B2B2B2B2B2B2B0069 /* PrimaryGlassButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0068 /* PrimaryGlassButton.swift */; };
 		2B2B2B2B2B2B2B2B2B2B006B /* SectionBlock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B006A /* SectionBlock.swift */; };
@@ -35,9 +38,9 @@
 		2B2B2B2B2B2B2B2B2B2B0030 /* ReasonAddedField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B002F /* ReasonAddedField.swift */; };
 		2B2B2B2B2B2B2B2B2B2B0032 /* RemoteDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0031 /* RemoteDetailView.swift */; };
 		2B2B2B2B2B2B2B2B2B2B0034 /* SavedDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0033 /* SavedDetailView.swift */; };
-		2B2B2B2B2B2B2B2B2B2B0037 /* FilterPillBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0036 /* FilterPillBar.swift */; };
+		2B2B2B2B2B2B2B2B2B2B0037 /* RefinedFilterPillBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0036 /* RefinedFilterPillBar.swift */; };
 		2B2B2B2B2B2B2B2B2B2B0039 /* PosterGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0038 /* PosterGrid.swift */; };
-		2B2B2B2B2B2B2B2B2B2B003B /* PosterCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B003A /* PosterCard.swift */; };
+		2B2B2B2B2B2B2B2B2B2B003B /* EditorialPosterCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B003A /* EditorialPosterCard.swift */; };
 		2B2B2B2B2B2B2B2B2B2B003D /* QuieroVerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B003C /* QuieroVerView.swift */; };
 		2B2B2B2B2B2B2B2B2B2B003F /* VistasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B003E /* VistasView.swift */; };
 		2B2B2B2B2B2B2B2B2B2B0042 /* SearchResultRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0041 /* SearchResultRow.swift */; };
@@ -46,11 +49,11 @@
 		2B2B2B2B2B2B2B2B2B2B0049 /* CastCarousel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0048 /* CastCarousel.swift */; };
 		2B2B2B2B2B2B2B2B2B2B004B /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B004A /* EmptyStateView.swift */; };
 		2B2B2B2B2B2B2B2B2B2B004D /* GenreChips.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B004C /* GenreChips.swift */; };
-		2B2B2B2B2B2B2B2B2B2B004F /* MediaDetailHero.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B004E /* MediaDetailHero.swift */; };
-		2B2B2B2B2B2B2B2B2B2B0051 /* PersonAvatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0050 /* PersonAvatar.swift */; };
+		2B2B2B2B2B2B2B2B2B2B004F /* MediaHeroHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B004E /* MediaHeroHeader.swift */; };
+		2B2B2B2B2B2B2B2B2B2B0051 /* CastPersonChip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0050 /* CastPersonChip.swift */; };
 		2B2B2B2B2B2B2B2B2B2B0053 /* PersonDisplayItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0052 /* PersonDisplayItem.swift */; };
 		2B2B2B2B2B2B2B2B2B2B0055 /* PosterPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0054 /* PosterPlaceholder.swift */; };
-		2B2B2B2B2B2B2B2B2B2B0058 /* CompletionSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0057 /* CompletionSheetView.swift */; };
+		2B2B2B2B2B2B2B2B2B2B0058 /* RefinedCompletionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0057 /* RefinedCompletionSheet.swift */; };
 		2B2B2B2B2B2B2B2B2B2B005A /* SlideToMarkWatchedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0059 /* SlideToMarkWatchedView.swift */; };
 		2B2B2B2B2B2B2B2B2B2B005D /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B005C /* RootView.swift */; };
 /* End PBXBuildFile section */
@@ -59,7 +62,10 @@
 		1A1A1A1A1A1A1A1A1A1A1A06 /* QuieroVerApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QuieroVerApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A1A1A1A1A1A1A1A1A1A1A07 /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B0001 /* QuieroVerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuieroVerApp.swift; sourceTree = "<group>"; };
-		2B2B2B2B2B2B2B2B2B2B0064 /* AddMediaCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMediaCard.swift; sourceTree = "<group>"; };
+		2B2B2B2B2B2B2B2B2B2B006C /* CompactAddCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompactAddCard.swift; sourceTree = "<group>"; };
+		2B2B2B2B2B2B2B2B2B2B006E /* PersonAvatarImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonAvatarImage.swift; sourceTree = "<group>"; };
+		2B2B2B2B2B2B2B2B2B2B0070 /* DirectorBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectorBadge.swift; sourceTree = "<group>"; };
+		2B2B2B2B2B2B2B2B2B2B0072 /* LiquidTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidTabBar.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B0066 /* GlassInfoPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassInfoPanel.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B0068 /* PrimaryGlassButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryGlassButton.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B006A /* SectionBlock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionBlock.swift; sourceTree = "<group>"; };
@@ -88,9 +94,9 @@
 		2B2B2B2B2B2B2B2B2B2B002F /* ReasonAddedField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReasonAddedField.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B0031 /* RemoteDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteDetailView.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B0033 /* SavedDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedDetailView.swift; sourceTree = "<group>"; };
-		2B2B2B2B2B2B2B2B2B2B0036 /* FilterPillBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterPillBar.swift; sourceTree = "<group>"; };
+		2B2B2B2B2B2B2B2B2B2B0036 /* RefinedFilterPillBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RefinedFilterPillBar.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B0038 /* PosterGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PosterGrid.swift; sourceTree = "<group>"; };
-		2B2B2B2B2B2B2B2B2B2B003A /* PosterCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PosterCard.swift; sourceTree = "<group>"; };
+		2B2B2B2B2B2B2B2B2B2B003A /* EditorialPosterCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorialPosterCard.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B003C /* QuieroVerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuieroVerView.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B003E /* VistasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VistasView.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B0041 /* SearchResultRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultRow.swift; sourceTree = "<group>"; };
@@ -99,11 +105,11 @@
 		2B2B2B2B2B2B2B2B2B2B0048 /* CastCarousel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CastCarousel.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B004A /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B004C /* GenreChips.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenreChips.swift; sourceTree = "<group>"; };
-		2B2B2B2B2B2B2B2B2B2B004E /* MediaDetailHero.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaDetailHero.swift; sourceTree = "<group>"; };
-		2B2B2B2B2B2B2B2B2B2B0050 /* PersonAvatar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonAvatar.swift; sourceTree = "<group>"; };
+		2B2B2B2B2B2B2B2B2B2B004E /* MediaHeroHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaHeroHeader.swift; sourceTree = "<group>"; };
+		2B2B2B2B2B2B2B2B2B2B0050 /* CastPersonChip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CastPersonChip.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B0052 /* PersonDisplayItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonDisplayItem.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B0054 /* PosterPlaceholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PosterPlaceholder.swift; sourceTree = "<group>"; };
-		2B2B2B2B2B2B2B2B2B2B0057 /* CompletionSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletionSheetView.swift; sourceTree = "<group>"; };
+		2B2B2B2B2B2B2B2B2B2B0057 /* RefinedCompletionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RefinedCompletionSheet.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B0059 /* SlideToMarkWatchedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlideToMarkWatchedView.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B005C /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -214,9 +220,9 @@
 		2B2B2B2B2B2B2B2B2B2B0040 /* Library */ = {
 			isa = PBXGroup;
 			children = (
-				2B2B2B2B2B2B2B2B2B2B0036 /* FilterPillBar.swift */,
+				2B2B2B2B2B2B2B2B2B2B0036 /* RefinedFilterPillBar.swift */,
 				2B2B2B2B2B2B2B2B2B2B0038 /* PosterGrid.swift */,
-				2B2B2B2B2B2B2B2B2B2B003A /* PosterCard.swift */,
+				2B2B2B2B2B2B2B2B2B2B003A /* EditorialPosterCard.swift */,
 				2B2B2B2B2B2B2B2B2B2B003C /* QuieroVerView.swift */,
 				2B2B2B2B2B2B2B2B2B2B003E /* VistasView.swift */,
 			);
@@ -235,14 +241,17 @@
 		2B2B2B2B2B2B2B2B2B2B0056 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
-				2B2B2B2B2B2B2B2B2B2B0064 /* AddMediaCard.swift */,
 				2B2B2B2B2B2B2B2B2B2B0046 /* AsyncPosterImage.swift */,
 				2B2B2B2B2B2B2B2B2B2B0048 /* CastCarousel.swift */,
+				2B2B2B2B2B2B2B2B2B2B0050 /* CastPersonChip.swift */,
+				2B2B2B2B2B2B2B2B2B2B006C /* CompactAddCard.swift */,
+				2B2B2B2B2B2B2B2B2B2B0070 /* DirectorBadge.swift */,
 				2B2B2B2B2B2B2B2B2B2B004A /* EmptyStateView.swift */,
 				2B2B2B2B2B2B2B2B2B2B004C /* GenreChips.swift */,
 				2B2B2B2B2B2B2B2B2B2B0066 /* GlassInfoPanel.swift */,
-				2B2B2B2B2B2B2B2B2B2B004E /* MediaDetailHero.swift */,
-				2B2B2B2B2B2B2B2B2B2B0050 /* PersonAvatar.swift */,
+				2B2B2B2B2B2B2B2B2B2B0072 /* LiquidTabBar.swift */,
+				2B2B2B2B2B2B2B2B2B2B004E /* MediaHeroHeader.swift */,
+				2B2B2B2B2B2B2B2B2B2B006E /* PersonAvatarImage.swift */,
 				2B2B2B2B2B2B2B2B2B2B0052 /* PersonDisplayItem.swift */,
 				2B2B2B2B2B2B2B2B2B2B0054 /* PosterPlaceholder.swift */,
 				2B2B2B2B2B2B2B2B2B2B0068 /* PrimaryGlassButton.swift */,
@@ -254,7 +263,7 @@
 		2B2B2B2B2B2B2B2B2B2B005B /* Watch */ = {
 			isa = PBXGroup;
 			children = (
-				2B2B2B2B2B2B2B2B2B2B0057 /* CompletionSheetView.swift */,
+				2B2B2B2B2B2B2B2B2B2B0057 /* RefinedCompletionSheet.swift */,
 				2B2B2B2B2B2B2B2B2B2B0059 /* SlideToMarkWatchedView.swift */,
 			);
 			path = Watch;
@@ -358,7 +367,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				2B2B2B2B2B2B2B2B2B2B0002 /* QuieroVerApp.swift in Sources */,
-				2B2B2B2B2B2B2B2B2B2B0065 /* AddMediaCard.swift in Sources */,
+				2B2B2B2B2B2B2B2B2B2B006D /* CompactAddCard.swift in Sources */,
+				2B2B2B2B2B2B2B2B2B2B006F /* PersonAvatarImage.swift in Sources */,
+				2B2B2B2B2B2B2B2B2B2B0071 /* DirectorBadge.swift in Sources */,
+				2B2B2B2B2B2B2B2B2B2B0073 /* LiquidTabBar.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B0067 /* GlassInfoPanel.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B0069 /* PrimaryGlassButton.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B006B /* SectionBlock.swift in Sources */,
@@ -383,9 +395,9 @@
 				2B2B2B2B2B2B2B2B2B2B0030 /* ReasonAddedField.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B0032 /* RemoteDetailView.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B0034 /* SavedDetailView.swift in Sources */,
-				2B2B2B2B2B2B2B2B2B2B0037 /* FilterPillBar.swift in Sources */,
+				2B2B2B2B2B2B2B2B2B2B0037 /* RefinedFilterPillBar.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B0039 /* PosterGrid.swift in Sources */,
-				2B2B2B2B2B2B2B2B2B2B003B /* PosterCard.swift in Sources */,
+				2B2B2B2B2B2B2B2B2B2B003B /* EditorialPosterCard.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B003D /* QuieroVerView.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B003F /* VistasView.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B0042 /* SearchResultRow.swift in Sources */,
@@ -394,11 +406,11 @@
 				2B2B2B2B2B2B2B2B2B2B0049 /* CastCarousel.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B004B /* EmptyStateView.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B004D /* GenreChips.swift in Sources */,
-				2B2B2B2B2B2B2B2B2B2B004F /* MediaDetailHero.swift in Sources */,
-				2B2B2B2B2B2B2B2B2B2B0051 /* PersonAvatar.swift in Sources */,
+				2B2B2B2B2B2B2B2B2B2B004F /* MediaHeroHeader.swift in Sources */,
+				2B2B2B2B2B2B2B2B2B2B0051 /* CastPersonChip.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B0053 /* PersonDisplayItem.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B0055 /* PosterPlaceholder.swift in Sources */,
-				2B2B2B2B2B2B2B2B2B2B0058 /* CompletionSheetView.swift in Sources */,
+				2B2B2B2B2B2B2B2B2B2B0058 /* RefinedCompletionSheet.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B005A /* SlideToMarkWatchedView.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B005D /* RootView.swift in Sources */,
 			);

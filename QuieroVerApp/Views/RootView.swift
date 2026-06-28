@@ -1,21 +1,23 @@
 import SwiftUI
 
 struct RootView: View {
+    @State private var selectedTab: LibraryTab = .quieroVer
+
     var body: some View {
-        TabView {
+        TabView(selection: $selectedTab) {
             NavigationStack {
                 QuieroVerView()
             }
-            .tabItem {
-                Label("Quiero ver", systemImage: "bookmark.fill")
-            }
+            .tag(LibraryTab.quieroVer)
 
             NavigationStack {
                 VistasView()
             }
-            .tabItem {
-                Label("Vistas", systemImage: "checkmark.seal.fill")
-            }
+            .tag(LibraryTab.vistas)
+        }
+        .tabViewStyle(.page(indexDisplayMode: .never))
+        .safeAreaInset(edge: .bottom) {
+            LiquidTabBar(selection: $selectedTab)
         }
     }
 }
