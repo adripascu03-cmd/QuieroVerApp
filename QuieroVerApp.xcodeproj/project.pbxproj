@@ -54,6 +54,7 @@
 		1A1A1A1A1A1A1A1A1A1A1A06 /* QuieroVerApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QuieroVerApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A1A1A1A1A1A1A1A1A1A1A07 /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B0001 /* QuieroVerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuieroVerApp.swift; sourceTree = "<group>"; };
+		2B2B2B2B2B2B2B2B2B2B0060 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B0004 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B0006 /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B0008 /* PosterButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PosterButtonStyle.swift; sourceTree = "<group>"; };
@@ -128,6 +129,7 @@
 			isa = PBXGroup;
 			children = (
 				2B2B2B2B2B2B2B2B2B2B0001 /* QuieroVerApp.swift */,
+				2B2B2B2B2B2B2B2B2B2B0060 /* Info.plist */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -437,11 +439,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = QuieroVerApp/App/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Quiero ver";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_TMDBAPIKey = "$(TMDB_API_KEY)";
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.adripascu.quieroverapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -460,11 +462,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = QuieroVerApp/App/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Quiero ver";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_TMDBAPIKey = "$(TMDB_API_KEY)";
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.adripascu.quieroverapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
