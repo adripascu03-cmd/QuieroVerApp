@@ -20,10 +20,10 @@ struct SlideToMarkWatchedView: View {
                     .fill(.thinMaterial)
 
                 Text("Desliza para marcar como vista")
-                    .font(.subheadline.weight(.medium))
                     .foregroundStyle(.secondary)
+                    .font(.subheadline.weight(.medium))
                     .frame(maxWidth: .infinity, alignment: .center)
-                    .opacity(1 - min(dragOffset / max(maxOffset, 1), 1))
+                    .opacity(Double(1 - min(dragOffset / max(maxOffset, 1), 1)))
 
                 Circle()
                     .fill(Color.accentColor)
