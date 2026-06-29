@@ -36,20 +36,21 @@ struct PerspectivePosterDeck: View {
     @State private var armedID: PersistentIdentifier?
     @State private var swipeX: CGFloat = 0
 
-    private let cardWidth: CGFloat = 238
+    private let cardWidth: CGFloat = 236
     private var cardHeight: CGFloat { cardWidth * 1.46 }
     private let dragStep: CGFloat = 80
     private let swipeToWatchThreshold: CGFloat = 78
 
-    // Geometría de RUEDA ROTATORIA (tipo Rolodex / cilindro de eje
-    // horizontal): cada carta se coloca en el aro de una rueda que gira.
-    // La activa mira de frente (ángulo 0); hacia arriba y hacia abajo las
-    // cartas giran en sentidos opuestos y ambos extremos retroceden en
-    // profundidad -> un mazo físico, escultural y continuo (espiral),
-    // con muchas cartas visibles en una cinta vertical (no una sola).
-    private let anglePerCard: Double = 26    // giro de la rueda entre cartas, en grados
-    private let wheelRadius: CGFloat = 192    // radio vertical del aro (reparto de las cartas)
-    private let deckPerspective: CGFloat = 0.46
+    // Geometría de EJE/RODILLO: todas las tarjetas están unidas por su
+    // ARISTA INFERIOR a un mismo rodillo horizontal. La tarjeta es rígida
+    // y gira solidaria con el eje pivotando sobre ese borde inferior
+    // (`anchor: .bottom`), así que la arista inferior apenas se mueve
+    // (pivote) y la superior describe un arco grande. NO son posters
+    // flotantes desplazados: comparten el borde inferior y se abren en
+    // abanico al girar. La activa queda vertical y de frente.
+    private let anglePerCard: Double = 28    // giro del eje entre tarjetas, en grados
+    private let axleY: CGFloat = 134          // posición del rodillo respecto al centro del deck
+    private let deckPerspective: CGFloat = 0.5
 
     private let autoplayTimer = Timer.publish(every: 0.02, on: .main, in: .common).autoconnect()
 
@@ -63,6 +64,11 @@ struct PerspectivePosterDeck: View {
                     .contentShape(Rectangle())
                     .onTapGesture { cancelSelection() }
                     .allowsHitTesting(armedID != nil)
+
+                // Rodillo/eje: la barra horizontal a la que están unidas
+                // las aristas inferiores de todas las tarjetas. Se asoma
+                // bajo el abanico para hacer legible el mecanismo.
+                axle
 
                 ForEach(Array(items.enumerated()), id: \.element.persistentModelID) { index, item in
                     cardView(index: index, item: item)
@@ -87,6 +93,25 @@ struct PerspectivePosterDeck: View {
         }
     }
 
+    // MARK: - Rodillo / eje
+
+    private var axle: some View {
+        Capsule(style: .continuous)
+            .fill(
+                LinearGradient(
+                    colors: [Color(.systemGray2), Color(.systemGray4)],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
+            .frame(width: cardWidth + 26, height: 13)
+            .overlay(Capsule().strokeBorder(.white.opacity(0.18), lineWidth: 0.5))
+            .shadow(color: .black.opacity(0.18), radius: 5, x: 0, y: 3)
+            .offset(y: axleY)
+            .zIndex(-1000)
+            .allowsHitTesting(false)
+    }
+
     // MARK: - Cartas
 
     @ViewBuilder
@@ -107,19 +132,24 @@ struct PerspectivePosterDeck: View {
             }
         }
         .scaleEffect(t.scale * (isArmed ? 1.08 : 1))
-        // Armada -> recta y frontal (sale del aro y destaca); si no,
-        // inclinada según su ángulo en la rueda.
+        // Pivota sobre su ARISTA INFERIOR (anchor .bottom): el borde de
+        // abajo queda fijo en el rodillo y la carta gira solidaria con el
+        // eje. Armada -> recta (0°) y separada del eje, para destacar.
         .rotation3DEffect(
             .degrees(isArmed ? 0 : t.rotation),
             axis: (x: 1, y: 0, z: 0),
+            anchor: .bottom,
             perspective: deckPerspective
         )
-        .offset(x: isArmed ? swipeX : 0, y: t.y + (isArmed ? -24 : 0))
+        .offset(x: isArmed ? swipeX : 0, y: t.y + (isArmed ? -26 : 0))
         .opacity(dimmed ? t.opacity * 0.28 : t.opacity)
         .zIndex(isArmed ? 1000 : t.z)
         .allowsHitTesting(armedID == nil ? t.opacity > 0.2 : isArmed)
         .onTapGesture { handleTap(on: item) }
-        .gesture(swipeToWatch(item: item), including: isArmed ? .all : .subviews)
+        // Estando armada, su swipe horizontal tiene PRIORIDAD sobre el
+        // pager de pantalla y el drag del deck (antes competían y la
+        // tarjeta no acompañaba al dedo).
+        .highPriorityGesture(swipeToWatch(item: item), including: isArmed ? .all : .subviews)
     }
 
     private var swipeHint: some View {
@@ -145,7 +175,7 @@ struct PerspectivePosterDeck: View {
     /// la opacidad llegue a 0 justo en la carta "opuesta" del círculo, y
     /// así el salto del loop sea invisible.
     private var span: Double {
-        count <= 2 ? 1.7 : min(3.2, Double(count) / 2.0)
+        count <= 2 ? 1.7 : min(2.6, Double(count) / 2.0)
     }
 
     private func deckTransform(_ relative: Double) -> (y: CGFloat, scale: CGFloat, opacity: Double, rotation: Double, z: Double) {
@@ -153,29 +183,31 @@ struct PerspectivePosterDeck: View {
         let angleDeg = relative * anglePerCard
         let angleRad = angleDeg * .pi / 180
 
-        // Posición en el aro de la rueda: y = R·sin(ángulo). El seno
-        // satura cerca de ±90°, así que las cartas se comprimen de forma
-        // natural arriba y abajo, como una rueda física. `relative`
-        // negativo (arriba) -> y negativo (sube).
-        let y = wheelRadius * CGFloat(sin(angleRad))
+        // TODAS las tarjetas comparten el mismo borde inferior sobre el
+        // rodillo: `y` coloca ese borde en el eje (centro de la carta a
+        // media altura por encima). El abanico NO nace de desplazar cada
+        // carta, sino de la rotación alrededor de ese borde inferior
+        // (anchor .bottom en la vista) -> mecanismo de eje, no posters
+        // sueltos.
+        let y = axleY - cardHeight / 2
 
-        // Profundidad de la rueda: 0 de frente, 1 al fondo del aro. Las
-        // cartas que giran hacia atrás se alejan y se ven más pequeñas.
+        // Pizca de profundidad: cuanto más gira (más se aleja la arista
+        // superior), un poco más pequeña.
         let depth = (1 - cos(angleRad)) / 2
-        let scale = CGFloat(max(1 - depth * 0.95, 0.46))
+        let scale = CGFloat(max(1 - depth * 0.4, 0.66))
 
-        // Opacidad OPACA cerca del frente (nada de "fantasmas"); cae a 0
-        // en `span` (la carta diametralmente opuesta del círculo), de modo
-        // que el salto del loop continuo es invisible.
+        // Opacidad opaca cerca del frente; cae a 0 en `span` (tarjeta
+        // opuesta del círculo) para que el giro continuo no tenga salto.
         let n = min(dist / span, 1.0)
         let opacity = Double(max(0, 1 - pow(n, 2.4)))
 
-        // La inclinación de cada carta ES su ángulo en la rueda: arriba y
-        // abajo giran en sentidos opuestos respecto a la activa frontal.
+        // La inclinación de la tarjeta ES su ángulo en el eje.
         let rotation = angleDeg
 
-        // Las cartas del frente del aro van por delante.
-        let z = cos(angleRad)
+        // Orden por profundidad real: las que se inclinan hacia el
+        // espectador (ángulo > 0) quedan por delante; las que giran hacia
+        // atrás, por detrás. Así la activa no tapa a todas.
+        let z = sin(angleRad)
         return (y, scale, opacity, rotation, z)
     }
 
