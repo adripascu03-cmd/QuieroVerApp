@@ -36,19 +36,20 @@ struct PerspectivePosterDeck: View {
     @State private var armedID: PersistentIdentifier?
     @State private var swipeX: CGFloat = 0
 
-    private let cardWidth: CGFloat = 232
+    private let cardWidth: CGFloat = 238
     private var cardHeight: CGFloat { cardWidth * 1.46 }
-    private let dragStep: CGFloat = 82
-    private let swipeToWatchThreshold: CGFloat = 115
+    private let dragStep: CGFloat = 80
+    private let swipeToWatchThreshold: CGFloat = 78
 
-    // Geometría del mazo (ver `deckTransform`). El mazo se mira "desde
-    // arriba": las cartas van inclinadas en perspectiva, comprimidas y
-    // pegadas arriba, y con un hueco amplio abajo donde asoma la
-    // siguiente con un trapezoide marcado.
-    private let baseTilt: Double = 17        // inclinación de la carta activa, en grados
-    private let aboveGap: CGFloat = 40       // separación pequeña arriba -> compresión (cantos visibles)
-    private let belowGap: CGFloat = 116      // separación amplia abajo -> asoma una carta
-    private let deckPerspective: CGFloat = 0.72
+    // Geometría de RUEDA ROTATORIA (tipo Rolodex / cilindro de eje
+    // horizontal): cada carta se coloca en el aro de una rueda que gira.
+    // La activa mira de frente (ángulo 0); hacia arriba y hacia abajo las
+    // cartas giran en sentidos opuestos y ambos extremos retroceden en
+    // profundidad -> un mazo físico, escultural y continuo (espiral),
+    // con muchas cartas visibles en una cinta vertical (no una sola).
+    private let anglePerCard: Double = 26    // giro de la rueda entre cartas, en grados
+    private let wheelRadius: CGFloat = 192    // radio vertical del aro (reparto de las cartas)
+    private let deckPerspective: CGFloat = 0.46
 
     private let autoplayTimer = Timer.publish(every: 0.02, on: .main, in: .common).autoconnect()
 
@@ -105,15 +106,16 @@ struct PerspectivePosterDeck: View {
                     .transition(.opacity)
             }
         }
-        .scaleEffect(t.scale * (isArmed ? 1.06 : 1))
-        // Armada -> recta y frontal; si no, inclinada según el mazo.
+        .scaleEffect(t.scale * (isArmed ? 1.08 : 1))
+        // Armada -> recta y frontal (sale del aro y destaca); si no,
+        // inclinada según su ángulo en la rueda.
         .rotation3DEffect(
             .degrees(isArmed ? 0 : t.rotation),
             axis: (x: 1, y: 0, z: 0),
             perspective: deckPerspective
         )
-        .offset(x: isArmed ? swipeX : 0, y: t.y + (isArmed ? -18 : 0))
-        .opacity(dimmed ? t.opacity * 0.35 : t.opacity)
+        .offset(x: isArmed ? swipeX : 0, y: t.y + (isArmed ? -24 : 0))
+        .opacity(dimmed ? t.opacity * 0.28 : t.opacity)
         .zIndex(isArmed ? 1000 : t.z)
         .allowsHitTesting(armedID == nil ? t.opacity > 0.2 : isArmed)
         .onTapGesture { handleTap(on: item) }
@@ -148,35 +150,32 @@ struct PerspectivePosterDeck: View {
 
     private func deckTransform(_ relative: Double) -> (y: CGFloat, scale: CGFloat, opacity: Double, rotation: Double, z: Double) {
         let dist = abs(relative)
-        let below = relative > 0
+        let angleDeg = relative * anglePerCard
+        let angleRad = angleDeg * .pi / 180
 
-        // Posición vertical asimétrica: arriba se comprime (gap pequeño,
-        // se ven sobre todo los cantos superiores), abajo hay hueco amplio
-        // para que asome una sola carta. `relative` negativo sube.
-        let y = below ? CGFloat(relative) * belowGap : CGFloat(relative) * aboveGap
+        // Posición en el aro de la rueda: y = R·sin(ángulo). El seno
+        // satura cerca de ±90°, así que las cartas se comprimen de forma
+        // natural arriba y abajo, como una rueda física. `relative`
+        // negativo (arriba) -> y negativo (sube).
+        let y = wheelRadius * CGFloat(sin(angleRad))
 
-        // Escala: arriba encoge bastante (se agolpan), abajo casi nada
-        // (la siguiente carta es grande y protagonista al asomar).
-        let scale = below
-            ? CGFloat(max(1 - dist * 0.045, 0.74))
-            : CGFloat(max(1 - dist * 0.075, 0.60))
+        // Profundidad de la rueda: 0 de frente, 1 al fondo del aro. Las
+        // cartas que giran hacia atrás se alejan y se ven más pequeñas.
+        let depth = (1 - cos(angleRad)) / 2
+        let scale = CGFloat(max(1 - depth * 0.95, 0.46))
 
-        // Inclinación de perspectiva en UNA dirección (se mira el mazo
-        // desde arriba): la carta activa ya va inclinada `baseTilt`; hacia
-        // abajo se acentúa (trapezoide que asoma), hacia arriba se aplana
-        // hasta casi recta (cantos). Es continua en el centro (= baseTilt).
-        let rotation = below
-            ? min(baseTilt + dist * 15, 48)
-            : max(baseTilt - dist * 11, -8)
-
-        // Opacidad: cartas OPACAS, nada de "fantasmas". Se mantiene alta
-        // cerca del centro y cae a 0 justo en `span`, de modo que la carta
-        // diametralmente opuesta del círculo está a 0 y el salto del loop
-        // es invisible.
+        // Opacidad OPACA cerca del frente (nada de "fantasmas"); cae a 0
+        // en `span` (la carta diametralmente opuesta del círculo), de modo
+        // que el salto del loop continuo es invisible.
         let n = min(dist / span, 1.0)
         let opacity = Double(max(0, 1 - pow(n, 2.4)))
 
-        let z = Double(-dist)
+        // La inclinación de cada carta ES su ángulo en la rueda: arriba y
+        // abajo giran en sentidos opuestos respecto a la activa frontal.
+        let rotation = angleDeg
+
+        // Las cartas del frente del aro van por delante.
+        let z = cos(angleRad)
         return (y, scale, opacity, rotation, z)
     }
 
@@ -217,7 +216,7 @@ struct PerspectivePosterDeck: View {
 
     private func autoplayTick() {
         guard count >= 2, !isDragging, armedID == nil, !autoplayPaused else { return }
-        let drift = 0.0035
+        let drift = 0.003
         if count == 2 {
             // Vaivén suave entre las dos cartas (el círculo degenera con 2).
             scrollPosition += pingPongForward ? drift : -drift
@@ -312,12 +311,15 @@ struct PerspectivePosterDeck: View {
     }
 
     private func swipeToWatch(item: MediaItem) -> some Gesture {
-        DragGesture(minimumDistance: 10)
+        DragGesture(minimumDistance: 8)
             .onChanged { value in
                 swipeX = max(0, value.translation.width)
             }
             .onEnded { value in
-                if value.translation.width > swipeToWatchThreshold {
+                // Fácil de disparar: basta un deslizamiento corto a la
+                // derecha O un flick (la velocidad/predicción lo cuenta).
+                if value.translation.width > swipeToWatchThreshold
+                    || value.predictedEndTranslation.width > 150 {
                     // Sale por la derecha y se marca como vista.
                     withAnimation(.easeIn(duration: 0.25)) {
                         swipeX = 600
