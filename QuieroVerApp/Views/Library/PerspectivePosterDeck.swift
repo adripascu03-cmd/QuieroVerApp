@@ -36,10 +36,19 @@ struct PerspectivePosterDeck: View {
     @State private var armedID: PersistentIdentifier?
     @State private var swipeX: CGFloat = 0
 
-    private let cardWidth: CGFloat = 248
+    private let cardWidth: CGFloat = 232
     private var cardHeight: CGFloat { cardWidth * 1.46 }
     private let dragStep: CGFloat = 82
     private let swipeToWatchThreshold: CGFloat = 115
+
+    // Geometría del mazo (ver `deckTransform`). El mazo se mira "desde
+    // arriba": las cartas van inclinadas en perspectiva, comprimidas y
+    // pegadas arriba, y con un hueco amplio abajo donde asoma la
+    // siguiente con un trapezoide marcado.
+    private let baseTilt: Double = 17        // inclinación de la carta activa, en grados
+    private let aboveGap: CGFloat = 40       // separación pequeña arriba -> compresión (cantos visibles)
+    private let belowGap: CGFloat = 116      // separación amplia abajo -> asoma una carta
+    private let deckPerspective: CGFloat = 0.72
 
     private let autoplayTimer = Timer.publish(every: 0.02, on: .main, in: .common).autoconnect()
 
@@ -96,10 +105,15 @@ struct PerspectivePosterDeck: View {
                     .transition(.opacity)
             }
         }
-        .scaleEffect(t.scale * (isArmed ? 1.05 : 1))
-        .rotation3DEffect(.degrees(isArmed ? 0 : t.rotation), axis: (x: 1, y: 0, z: 0), perspective: 0.55)
-        .offset(x: isArmed ? swipeX : 0, y: t.y + (isArmed ? -14 : 0))
-        .opacity(dimmed ? t.opacity * 0.4 : t.opacity)
+        .scaleEffect(t.scale * (isArmed ? 1.06 : 1))
+        // Armada -> recta y frontal; si no, inclinada según el mazo.
+        .rotation3DEffect(
+            .degrees(isArmed ? 0 : t.rotation),
+            axis: (x: 1, y: 0, z: 0),
+            perspective: deckPerspective
+        )
+        .offset(x: isArmed ? swipeX : 0, y: t.y + (isArmed ? -18 : 0))
+        .opacity(dimmed ? t.opacity * 0.35 : t.opacity)
         .zIndex(isArmed ? 1000 : t.z)
         .allowsHitTesting(armedID == nil ? t.opacity > 0.2 : isArmed)
         .onTapGesture { handleTap(on: item) }
@@ -129,21 +143,39 @@ struct PerspectivePosterDeck: View {
     /// la opacidad llegue a 0 justo en la carta "opuesta" del círculo, y
     /// así el salto del loop sea invisible.
     private var span: Double {
-        count <= 2 ? 1.7 : min(3.0, Double(count) / 2.0)
+        count <= 2 ? 1.7 : min(3.2, Double(count) / 2.0)
     }
 
     private func deckTransform(_ relative: Double) -> (y: CGFloat, scale: CGFloat, opacity: Double, rotation: Double, z: Double) {
         let dist = abs(relative)
-        let direction: CGFloat = relative < 0 ? -1 : 1
-        // Crecimiento sublineal del offset -> las lejanas se agolpan.
-        let yMagnitude = pow(dist, 0.8) * 52
-        let y = direction * yMagnitude
-        let scale = max(1 - dist * 0.11, 0.56)
-        let opacity = max(0, 1 - dist / span)
-        // Tilt de perspectiva: las de arriba muestran su canto inferior,
-        // las de abajo el superior -> cilindro convexo. Más marcado que
-        // antes para acercarlo a la referencia.
-        let rotation = Double(-direction) * min(dist, 3) * 8
+        let below = relative > 0
+
+        // Posición vertical asimétrica: arriba se comprime (gap pequeño,
+        // se ven sobre todo los cantos superiores), abajo hay hueco amplio
+        // para que asome una sola carta. `relative` negativo sube.
+        let y = below ? CGFloat(relative) * belowGap : CGFloat(relative) * aboveGap
+
+        // Escala: arriba encoge bastante (se agolpan), abajo casi nada
+        // (la siguiente carta es grande y protagonista al asomar).
+        let scale = below
+            ? CGFloat(max(1 - dist * 0.045, 0.74))
+            : CGFloat(max(1 - dist * 0.075, 0.60))
+
+        // Inclinación de perspectiva en UNA dirección (se mira el mazo
+        // desde arriba): la carta activa ya va inclinada `baseTilt`; hacia
+        // abajo se acentúa (trapezoide que asoma), hacia arriba se aplana
+        // hasta casi recta (cantos). Es continua en el centro (= baseTilt).
+        let rotation = below
+            ? min(baseTilt + dist * 15, 48)
+            : max(baseTilt - dist * 11, -8)
+
+        // Opacidad: cartas OPACAS, nada de "fantasmas". Se mantiene alta
+        // cerca del centro y cae a 0 justo en `span`, de modo que la carta
+        // diametralmente opuesta del círculo está a 0 y el salto del loop
+        // es invisible.
+        let n = min(dist / span, 1.0)
+        let opacity = Double(max(0, 1 - pow(n, 2.4)))
+
         let z = Double(-dist)
         return (y, scale, opacity, rotation, z)
     }
@@ -340,12 +372,12 @@ private struct SwipeHintLabel: View {
     var body: some View {
         Text("Desliza para marcar como vista  »")
             .font(.caption2.weight(.semibold))
-        .foregroundStyle(.white)
-        .padding(.horizontal, 12)
-        .padding(.vertical, 6)
-        .background(.ultraThinMaterial, in: Capsule())
-        .overlay(Capsule().strokeBorder(.white.opacity(0.25), lineWidth: 0.5))
-        .opacity(pulse ? 1 : 0.55)
+            .foregroundStyle(.white)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(.ultraThinMaterial, in: Capsule())
+            .overlay(Capsule().strokeBorder(.white.opacity(0.25), lineWidth: 0.5))
+            .opacity(pulse ? 1 : 0.55)
         .onAppear {
             withAnimation(.easeInOut(duration: 0.9).repeatForever(autoreverses: true)) {
                 pulse = true
@@ -368,11 +400,15 @@ struct PosterDeckCard: View {
             mediaType: item.mediaType
         )
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .strokeBorder(.white.opacity(0.14), lineWidth: 1)
+            RoundedRectangle(cornerRadius: 22, style: .continuous)
+                .strokeBorder(.white.opacity(0.16), lineWidth: 1)
         )
-        .shadow(color: .black.opacity(isActive ? 0.32 : 0.16), radius: isActive ? 26 : 14, x: 0, y: isActive ? 18 : 10)
+        // Doble sombra: una de contacto (corta, marca la separación entre
+        // cartas del mazo) y una ambiental (amplia, da volumen). Más fuerte
+        // en la activa para que flote por delante de la pila.
+        .shadow(color: .black.opacity(isActive ? 0.26 : 0.22), radius: isActive ? 10 : 7, x: 0, y: 5)
+        .shadow(color: .black.opacity(isActive ? 0.30 : 0.12), radius: isActive ? 30 : 16, x: 0, y: isActive ? 20 : 11)
     }
 }
