@@ -25,7 +25,7 @@ struct RootView: View {
             let pageWidth = proxy.size.width
 
             HStack(spacing: 0) {
-                QuieroVerView(path: $quieroVerPath)
+                QuieroVerView(path: $quieroVerPath, onRequestVistas: goToVistas)
                     .frame(width: pageWidth)
                 VistasView(path: $vistasPath)
                     .frame(width: pageWidth)
@@ -41,6 +41,20 @@ struct RootView: View {
                 dragGesture(pageWidth: pageWidth),
                 including: isAtRoot ? .all : .subviews
             )
+            // Banda sutil que funde el contenido hacia el fondo justo
+            // encima de la tab bar flotante, para que el deck no quede
+            // "cortado" en seco por los controles inferiores.
+            .overlay(alignment: .bottom) {
+                if isAtRoot {
+                    LinearGradient(
+                        colors: [.clear, Color(.systemBackground)],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                    .frame(height: 64)
+                    .allowsHitTesting(false)
+                }
+            }
         }
         .safeAreaInset(edge: .bottom) {
             if isAtRoot {
@@ -49,6 +63,16 @@ struct RootView: View {
             }
         }
         .animation(.easeInOut(duration: 0.28), value: isAtRoot)
+    }
+
+    /// Cambia a "Vistas" tras marcar una película como vista desde el
+    /// deck — la transición de pestaña es la misma que el swipe del pager.
+    private func goToVistas() {
+        guard selectedTab != .vistas else { return }
+        withAnimation(.spring(response: 0.45, dampingFraction: 0.85)) {
+            selectedTab = .vistas
+        }
+        Haptics.light()
     }
 
     private func dragGesture(pageWidth: CGFloat) -> some Gesture {

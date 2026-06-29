@@ -60,7 +60,7 @@
 		2B2B2B2B2B2B2B2B2B2B0058 /* WatchRatingSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0057 /* WatchRatingSheet.swift */; };
 		2B2B2B2B2B2B2B2B2B2B005D /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B005C /* RootView.swift */; };
 		2B2B2B2B2B2B2B2B2B2B0089 /* PerspectivePosterDeck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0088 /* PerspectivePosterDeck.swift */; };
-		2B2B2B2B2B2B2B2B2B2B008B /* FloatingAddButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B008A /* FloatingAddButton.swift */; };
+		2B2B2B2B2B2B2B2B2B2B008F /* PosterGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B008E /* PosterGridView.swift */; };
 		2B2B2B2B2B2B2B2B2B2B008D /* CircleIconButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B008C /* CircleIconButton.swift */; };
 		2B2B2B2B2B2B2B2B2B2B0083 /* DirectorsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0082 /* DirectorsSection.swift */; };
 		2B2B2B2B2B2B2B2B2B2B0085 /* MetricChip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2B2B2B2B2B2B2B2B2B0084 /* MetricChip.swift */; };
@@ -125,7 +125,7 @@
 		2B2B2B2B2B2B2B2B2B2B0057 /* WatchRatingSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchRatingSheet.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B005C /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B0088 /* PerspectivePosterDeck.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerspectivePosterDeck.swift; sourceTree = "<group>"; };
-		2B2B2B2B2B2B2B2B2B2B008A /* FloatingAddButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingAddButton.swift; sourceTree = "<group>"; };
+		2B2B2B2B2B2B2B2B2B2B008E /* PosterGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PosterGridView.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B008C /* CircleIconButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleIconButton.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B0082 /* DirectorsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectorsSection.swift; sourceTree = "<group>"; };
 		2B2B2B2B2B2B2B2B2B2B0084 /* MetricChip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricChip.swift; sourceTree = "<group>"; };
@@ -245,6 +245,7 @@
 				2B2B2B2B2B2B2B2B2B2B003A /* EditorialPosterCard.swift */,
 				2B2B2B2B2B2B2B2B2B2B0082 /* DirectorsSection.swift */,
 				2B2B2B2B2B2B2B2B2B2B0088 /* PerspectivePosterDeck.swift */,
+				2B2B2B2B2B2B2B2B2B2B008E /* PosterGridView.swift */,
 				2B2B2B2B2B2B2B2B2B2B003C /* QuieroVerView.swift */,
 				2B2B2B2B2B2B2B2B2B2B003E /* VistasView.swift */,
 			);
@@ -271,7 +272,6 @@
 				2B2B2B2B2B2B2B2B2B2B008C /* CircleIconButton.swift */,
 				2B2B2B2B2B2B2B2B2B2B0070 /* DirectorSection.swift */,
 				2B2B2B2B2B2B2B2B2B2B004A /* EmptyStateView.swift */,
-				2B2B2B2B2B2B2B2B2B2B008A /* FloatingAddButton.swift */,
 				2B2B2B2B2B2B2B2B2B2B004C /* GenreChips.swift */,
 				2B2B2B2B2B2B2B2B2B2B0066 /* GlassInfoPanel.swift */,
 				2B2B2B2B2B2B2B2B2B2B0072 /* LiquidTabBar.swift */,
@@ -447,7 +447,7 @@
 				2B2B2B2B2B2B2B2B2B2B0085 /* MetricChip.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B0087 /* StarRatingPicker.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B0089 /* PerspectivePosterDeck.swift in Sources */,
-				2B2B2B2B2B2B2B2B2B2B008B /* FloatingAddButton.swift in Sources */,
+				2B2B2B2B2B2B2B2B2B2B008F /* PosterGridView.swift in Sources */,
 				2B2B2B2B2B2B2B2B2B2B008D /* CircleIconButton.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

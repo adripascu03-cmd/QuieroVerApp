@@ -72,7 +72,9 @@ struct VistasView: View {
             } else if items.isEmpty {
                 EmptyFilterNotice()
             } else {
-                PerspectivePosterDeck(items: items, showImpact: true) { item in
+                // "Vistas" es una galería 2D (no deck): es el archivo ya
+                // completado, con jerarquía visual distinta a "Quiero ver".
+                PosterGridView(items: items, showImpact: true) { item in
                     path.append(item)
                 }
                 .id(filter)
