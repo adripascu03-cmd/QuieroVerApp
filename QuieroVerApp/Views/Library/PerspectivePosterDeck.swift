@@ -36,9 +36,9 @@ struct PerspectivePosterDeck: View {
     @State private var armedID: PersistentIdentifier?
     @State private var swipeX: CGFloat = 0
 
-    private let cardWidth: CGFloat = 236
+    private let cardWidth: CGFloat = 188
     private var cardHeight: CGFloat { cardWidth * 1.46 }
-    private let dragStep: CGFloat = 80
+    private let dragStep: CGFloat = 70
     private let swipeToWatchThreshold: CGFloat = 78
 
     // Geometría de EJE/RODILLO: todas las tarjetas están unidas por su
@@ -48,8 +48,8 @@ struct PerspectivePosterDeck: View {
     // (pivote) y la superior describe un arco grande. NO son posters
     // flotantes desplazados: comparten el borde inferior y se abren en
     // abanico al girar. La activa queda vertical y de frente.
-    private let anglePerCard: Double = 28    // giro del eje entre tarjetas, en grados
-    private let axleY: CGFloat = 134          // posición del rodillo respecto al centro del deck
+    private let anglePerCard: Double = 34    // giro del eje entre tarjetas (recorrido más largo)
+    private let axleY: CGFloat = 120          // posición del rodillo respecto al centro del deck
     private let deckPerspective: CGFloat = 0.5
 
     private let autoplayTimer = Timer.publish(every: 0.02, on: .main, in: .common).autoconnect()
@@ -178,7 +178,7 @@ struct PerspectivePosterDeck: View {
     /// la opacidad llegue a 0 justo en la carta "opuesta" del círculo, y
     /// así el salto del loop sea invisible.
     private var span: Double {
-        count <= 2 ? 1.7 : min(2.6, Double(count) / 2.0)
+        count <= 2 ? 1.7 : min(3.4, Double(count) / 2.0)
     }
 
     private func deckTransform(_ relative: Double) -> (y: CGFloat, scale: CGFloat, opacity: Double, rotation: Double, z: Double) {
@@ -199,10 +199,14 @@ struct PerspectivePosterDeck: View {
         let depth = (1 - cos(angleRad)) / 2
         let scale = CGFloat(max(1 - depth * 0.4, 0.66))
 
-        // Tarjetas TOTALMENTE OPACAS: nada de "fantasmas". Solo la que
-        // entra/sale del recorrido se desvanece en el último tramo junto
-        // al borde, lo justo para que el giro continuo no dé un salto.
-        let fadeStart = max(span - 0.6, 0.1)
+        // Tarjetas TOTALMENTE OPACAS durante TODO el recorrido. No
+        // desaparecen por fade: siguen girando por el circuito y dejan de
+        // verse por OCLUSIÓN (otras las tapan) o porque el giro las lleva
+        // bajo el rodillo (se recortan). Solo hay un desvanecido mínimo en
+        // el últimísimo tramo (0.35) del extremo, donde la tarjeta ya está
+        // muy girada y prácticamente tapada -> imperceptible, solo evita un
+        // salto al cerrar el loop.
+        let fadeStart = max(span - 0.35, 0.1)
         let opacity: Double
         if dist <= fadeStart {
             opacity = 1
@@ -301,14 +305,17 @@ struct PerspectivePosterDeck: View {
                     dragStartPosition = scrollPosition
                     pauseAutoplay()
                 }
-                let delta = -value.translation.height / dragStep
+                // Dirección natural: deslizar hacia ABAJO mueve las pelis
+                // hacia abajo (el gesto y el movimiento van en el mismo
+                // sentido). Antes estaba invertido (signo negativo).
+                let delta = value.translation.height / dragStep
                 var newPos = dragStartPosition + delta
                 if count <= 2 { newPos = min(max(newPos, 0), Double(max(count - 1, 0))) }
                 scrollPosition = newPos
                 fireSelectionHapticIfNeeded()
             }
             .onEnded { value in
-                let predicted = -value.predictedEndTranslation.height / dragStep
+                let predicted = value.predictedEndTranslation.height / dragStep
                 var target = (dragStartPosition + predicted).rounded()
                 if count <= 2 { target = min(max(target, 0), Double(max(count - 1, 0))) }
                 withAnimation(.spring(response: 0.45, dampingFraction: 0.82)) {
