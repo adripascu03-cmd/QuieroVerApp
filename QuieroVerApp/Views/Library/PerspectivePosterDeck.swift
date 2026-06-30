@@ -77,10 +77,13 @@ struct PerspectivePosterDeck: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .clipped()
             .contentShape(Rectangle())
-            // El arrastre vertical solo recorre el deck cuando NO hay
-            // selección activa (si hay, manda el swipe horizontal de la
-            // carta). `including:` cambia solo la máscara, no la identidad.
-            .gesture(verticalDrag, including: armedID == nil ? .all : .subviews)
+            // Drag vertical SIMULTÁNEO: se reconoce a la vez que los taps
+            // de las tarjetas, así arrastrar en CUALQUIER punto del área
+            // (también encima de una película) mueve el carrusel — ya no
+            // hace falta deslizar por el lateral. Un tap (sin movimiento)
+            // sigue armando la tarjeta. Cuando hay una seleccionada, la
+            // máscara `.subviews` cede el gesto al swipe horizontal propio.
+            .simultaneousGesture(verticalDrag, including: armedID == nil ? .all : .subviews)
 
             caption
                 .frame(height: 50)
@@ -196,18 +199,27 @@ struct PerspectivePosterDeck: View {
         let depth = (1 - cos(angleRad)) / 2
         let scale = CGFloat(max(1 - depth * 0.4, 0.66))
 
-        // Opacidad opaca cerca del frente; cae a 0 en `span` (tarjeta
-        // opuesta del círculo) para que el giro continuo no tenga salto.
-        let n = min(dist / span, 1.0)
-        let opacity = Double(max(0, 1 - pow(n, 2.4)))
+        // Tarjetas TOTALMENTE OPACAS: nada de "fantasmas". Solo la que
+        // entra/sale del recorrido se desvanece en el último tramo junto
+        // al borde, lo justo para que el giro continuo no dé un salto.
+        let fadeStart = max(span - 0.6, 0.1)
+        let opacity: Double
+        if dist <= fadeStart {
+            opacity = 1
+        } else {
+            opacity = Double(max(0, 1 - (dist - fadeStart) / (span - fadeStart)))
+        }
 
         // La inclinación de la tarjeta ES su ángulo en el eje.
         let rotation = angleDeg
 
-        // Orden por profundidad real: las que se inclinan hacia el
-        // espectador (ángulo > 0) quedan por delante; las que giran hacia
-        // atrás, por detrás. Así la activa no tapa a todas.
-        let z = sin(angleRad)
+        // SOBREPOSICIÓN (corregida): las tarjetas nacen detrás (en la
+        // posición más tumbada) y se mantienen detrás; las que TERMINAN el
+        // recorrido tapan al resto. `relative` decrece según avanza una
+        // tarjeta, así que un z monótono con -relative deja delante a las
+        // que van más avanzadas y detrás a las recién nacidas (5 tapa 4 …
+        // 2 tapa 1, no al revés).
+        let z = -relative
         return (y, scale, opacity, rotation, z)
     }
 
@@ -335,11 +347,14 @@ struct PerspectivePosterDeck: View {
     }
 
     private func cancelSelection() {
+        // Al deseleccionar (tap fuera), el carrusel se reanuda DE
+        // INMEDIATO, sin la espera anterior.
+        resumeWorkItem?.cancel()
         withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
             armedID = nil
             swipeX = 0
         }
-        scheduleResume()
+        autoplayPaused = false
     }
 
     private func swipeToWatch(item: MediaItem) -> some Gesture {
