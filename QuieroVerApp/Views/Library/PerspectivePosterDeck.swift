@@ -36,9 +36,9 @@ struct PerspectivePosterDeck: View {
     @State private var armedID: PersistentIdentifier?
     @State private var swipeX: CGFloat = 0
 
-    private let cardWidth: CGFloat = 188
+    private let cardWidth: CGFloat = 168
     private var cardHeight: CGFloat { cardWidth * 1.46 }
-    private let dragStep: CGFloat = 70
+    private let dragStep: CGFloat = 66
     private let swipeToWatchThreshold: CGFloat = 78
 
     // Geometría de EJE/RODILLO: todas las tarjetas están unidas por su
@@ -48,9 +48,9 @@ struct PerspectivePosterDeck: View {
     // (pivote) y la superior describe un arco grande. NO son posters
     // flotantes desplazados: comparten el borde inferior y se abren en
     // abanico al girar. La activa queda vertical y de frente.
-    private let anglePerCard: Double = 34    // giro del eje entre tarjetas (recorrido más largo)
-    private let axleY: CGFloat = 120          // posición del rodillo respecto al centro del deck
-    private let deckPerspective: CGFloat = 0.5
+    private let anglePerCard: Double = 27    // giro del eje entre tarjetas (menos por carta -> menos deformación)
+    private let axleY: CGFloat = 96           // posición del pivote respecto al centro del deck (más centrado)
+    private let deckPerspective: CGFloat = 0.4  // menor -> 3D más suave, menos deformación
 
     private let autoplayTimer = Timer.publish(every: 0.02, on: .main, in: .common).autoconnect()
 
@@ -64,11 +64,6 @@ struct PerspectivePosterDeck: View {
                     .contentShape(Rectangle())
                     .onTapGesture { cancelSelection() }
                     .allowsHitTesting(armedID != nil)
-
-                // Rodillo/eje: la barra horizontal a la que están unidas
-                // las aristas inferiores de todas las tarjetas. Se asoma
-                // bajo el abanico para hacer legible el mecanismo.
-                axle
 
                 ForEach(Array(items.enumerated()), id: \.element.persistentModelID) { index, item in
                     cardView(index: index, item: item)
@@ -96,25 +91,6 @@ struct PerspectivePosterDeck: View {
         }
     }
 
-    // MARK: - Rodillo / eje
-
-    private var axle: some View {
-        Capsule(style: .continuous)
-            .fill(
-                LinearGradient(
-                    colors: [Color(.systemGray2), Color(.systemGray4)],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-            )
-            .frame(width: cardWidth + 26, height: 13)
-            .overlay(Capsule().strokeBorder(.white.opacity(0.18), lineWidth: 0.5))
-            .shadow(color: .black.opacity(0.18), radius: 5, x: 0, y: 3)
-            .offset(y: axleY)
-            .zIndex(-1000)
-            .allowsHitTesting(false)
-    }
-
     // MARK: - Cartas
 
     @ViewBuilder
@@ -123,6 +99,12 @@ struct PerspectivePosterDeck: View {
         let t = deckTransform(relative)
         let isArmed = armedID == item.persistentModelID
         let dimmed = armedID != nil && !isArmed
+        let armScale = t.scale * (isArmed ? 1.08 : 1)
+        // Pasada la línea del horizonte (|ángulo| > 90°) la rotación 3D
+        // mostraría la portada del revés; un volteo vertical la deja del
+        // derecho. El cambio ocurre justo a 90°, donde la carta está de
+        // canto (altura visible ~0), así que es imperceptible.
+        let flipY: CGFloat = abs(t.rotation) > 90 ? -1 : 1
 
         ZStack(alignment: .top) {
             PosterDeckCard(item: item, isActive: index == activeIndex || isArmed)
@@ -134,7 +116,7 @@ struct PerspectivePosterDeck: View {
                     .transition(.opacity)
             }
         }
-        .scaleEffect(t.scale * (isArmed ? 1.08 : 1))
+        .scaleEffect(x: armScale, y: armScale * flipY)
         // Pivota sobre su ARISTA INFERIOR (anchor .bottom): el borde de
         // abajo queda fijo en el rodillo y la carta gira solidaria con el
         // eje. Armada -> recta (0°) y separada del eje, para destacar.
@@ -178,7 +160,7 @@ struct PerspectivePosterDeck: View {
     /// la opacidad llegue a 0 justo en la carta "opuesta" del círculo, y
     /// así el salto del loop sea invisible.
     private var span: Double {
-        count <= 2 ? 1.7 : min(3.4, Double(count) / 2.0)
+        count <= 2 ? 1.7 : min(3.7, Double(count) / 2.0)
     }
 
     private func deckTransform(_ relative: Double) -> (y: CGFloat, scale: CGFloat, opacity: Double, rotation: Double, z: Double) {
@@ -199,14 +181,13 @@ struct PerspectivePosterDeck: View {
         let depth = (1 - cos(angleRad)) / 2
         let scale = CGFloat(max(1 - depth * 0.4, 0.66))
 
-        // Tarjetas TOTALMENTE OPACAS durante TODO el recorrido. No
-        // desaparecen por fade: siguen girando por el circuito y dejan de
-        // verse por OCLUSIÓN (otras las tapan) o porque el giro las lleva
-        // bajo el rodillo (se recortan). Solo hay un desvanecido mínimo en
-        // el últimísimo tramo (0.35) del extremo, donde la tarjeta ya está
-        // muy girada y prácticamente tapada -> imperceptible, solo evita un
-        // salto al cerrar el loop.
-        let fadeStart = max(span - 0.35, 0.1)
+        // Tarjetas TOTALMENTE OPACAS durante todo el recorrido. No
+        // desaparecen por fade: dejan de verse por OCLUSIÓN (las de delante
+        // las tapan, ver `z`). El micro-fade es mínimo (0.18) y SOLO en el
+        // últimísimo tramo, donde la tarjeta ya está pasada de canto y
+        // detrás de las demás -> imperceptible, únicamente evita un salto
+        // al cerrar el loop.
+        let fadeStart = max(span - 0.18, 0.1)
         let opacity: Double
         if dist <= fadeStart {
             opacity = 1
@@ -217,13 +198,14 @@ struct PerspectivePosterDeck: View {
         // La inclinación de la tarjeta ES su ángulo en el eje.
         let rotation = angleDeg
 
-        // SOBREPOSICIÓN (corregida): las tarjetas nacen detrás (en la
-        // posición más tumbada) y se mantienen detrás; las que TERMINAN el
-        // recorrido tapan al resto. `relative` decrece según avanza una
-        // tarjeta, así que un z monótono con -relative deja delante a las
-        // que van más avanzadas y detrás a las recién nacidas (5 tapa 4 …
-        // 2 tapa 1, no al revés).
-        let z = -relative
+        // SOBREPOSICIÓN / PROFUNDIDAD: z por profundidad REAL del giro:
+        // cos(ángulo) deja la frontal delante y manda hacia ATRÁS a las que
+        // pasan el horizonte (>90°), de modo que al final del recorrido la
+        // tarjeta queda OCLUIDA por las de delante (desaparece por tapado,
+        // no por fade). El pequeño sesgo `-relative*0.06` mantiene el matiz
+        // de que las que van más avanzadas tapan a las recién nacidas, sin
+        // empates de z.
+        let z = cos(angleRad) - relative * 0.06
         return (y, scale, opacity, rotation, z)
     }
 
@@ -322,7 +304,9 @@ struct PerspectivePosterDeck: View {
                     scrollPosition = target
                 }
                 isDragging = false
-                scheduleResume()
+                // Reanuda casi de inmediato al soltar (solo lo justo para
+                // que asiente el snap), sin la pausa larga anterior.
+                scheduleResume(after: 0.3)
             }
     }
 
